@@ -1,0 +1,37 @@
+task main() {
+    string color_str;
+    int color;
+
+    SetSensorColorFull(IN_1);
+
+    while (true) {
+
+        if (Sensor(IN_1) == 1){
+           color_str = "Black";
+		       OnFwd(OUT_AC, 30);
+		       Wait(100);
+		       Off(OUT_AC);
+        }else if (Sensor(IN_1) == 2){
+           color_str = "Blue";
+        }else if (Sensor(IN_1) == 3){
+           color_str = "Green";
+        }else if (Sensor(IN_1) == 4){
+           color_str = "Yellow";
+           /*OnFwd(OUT_AC, 30);
+           Wait(100);*/
+		       OnFwd(OUT_A, 30);
+           Wait(5000);
+           Off(OUT_A);
+        }else if (Sensor(IN_1) == 5){
+           color_str = "Red";
+		       OnFwd(OUT_A, 30);
+           Wait(13100);
+           Off(OUT_A);
+        }else if (Sensor(IN_1) == 6){
+           color_str = "White";
+           //Off(OUT_AC);
+        }
+
+        TextOut(0, 10, color_str);
+    }
+}

@@ -11,6 +11,7 @@ task main() {
 		       OnFwd(OUT_AC, 30);
 		       Wait(100);
 		       Off(OUT_AC);
+
         }else if (Sensor(IN_1) == 2){
            color_str = "Blue";
         }else if (Sensor(IN_1) == 3){
@@ -20,18 +21,20 @@ task main() {
            /*OnFwd(OUT_AC, 30);
            Wait(100);*/
 		       OnFwd(OUT_A, 30);
-           Wait(5000);
+           Wait(6700);
            Off(OUT_A);
         }else if (Sensor(IN_1) == 5){
            color_str = "Red";
 		       OnFwd(OUT_A, 30);
-           Wait(13100);
+           Wait(13400);
            Off(OUT_A);
         }else if (Sensor(IN_1) == 6){
            color_str = "White";
-           //Off(OUT_AC);
+           /*until(Sensor(IN_1) == 1){
+               OnRev(OUT_A, 30);
+           }*/
         }
 
-        TextOut(0, 10, color_str);
+        TextOut(0, 0, color_str);
     }
 }

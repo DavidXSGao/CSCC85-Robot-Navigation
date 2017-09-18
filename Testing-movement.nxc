@@ -14,12 +14,12 @@ task main() {
         }else if (Sensor(IN_1) == 2){ //check if rgb sensor read "blue"
            color_str = "Blue";
 	   /*until(Sensor(IN_1) == 1){ // rotate the rotate back to the street
-               OnRev(OUT_A, 30);
+               OnRev(OUT_C, 30);
            }*/
         }else if (Sensor(IN_1) == 3){ // check if rgb sensor read "green"
            color_str = "Green";
 	   /*until(Sensor(IN_1) == 1){ // rotate the rotate back to the street
-               OnRev(OUT_A, 30);
+               OnRev(OUT_C, 30);
            }*/
         }else if (Sensor(IN_1) == 4){ //check if rgb sensor read "yellow"
            color_str = "Yellow";
@@ -34,7 +34,7 @@ task main() {
         }else if (Sensor(IN_1) == 6){ // check if rgb sensor read "white"
            color_str = "White";
            /*until(Sensor(IN_1) == 1){ // rotate the rotate back to the street
-               OnRev(OUT_A, 30);
+               OnRev(OUT_C, 30);
            }*/
         }
 

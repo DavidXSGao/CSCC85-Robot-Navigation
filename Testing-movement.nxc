@@ -41,3 +41,14 @@ task main() {
         TextOut(0, 0, color_str); // display current color on the monitor
     }
 }
+
+
+/*
+future todos:
+implement current code into starter code ;)
+figure out sound function with a functional nxt
+cover up the light sensor with a piece of paper
+navigate to the center
+keep track of places that have been to
+read green/blue as buildings
+*/

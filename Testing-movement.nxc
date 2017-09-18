@@ -1,40 +1,43 @@
 task main() {
-    string color_str;
-    int color;
+    string color_str; //string to display color on monitor for debugging
 
-    SetSensorColorFull(IN_1);
+    SetSensorColorFull(IN_1); //turn rbg sensor on
 
     while (true) {
 
-        if (Sensor(IN_1) == 1){
-           color_str = "Black";
-		       OnFwd(OUT_AC, 30);
-		       Wait(100);
-		       Off(OUT_AC);
+        if (Sensor(IN_1) == 1){ // check if rgb sensor read "black"
+           color_str = "Black"; 
+		       OnFwd(OUT_AC, 30); // move forward with an output power of 30
+		       Wait(100); // move foward for 100 milliseconds
+		       Off(OUT_AC); // stop motors to read the next color
 
-        }else if (Sensor(IN_1) == 2){
+        }else if (Sensor(IN_1) == 2){ //check if rgb sensor read "blue"
            color_str = "Blue";
-        }else if (Sensor(IN_1) == 3){
+	   /*until(Sensor(IN_1) == 1){ // rotate the rotate back to the street
+               OnRev(OUT_A, 30);
+           }*/
+        }else if (Sensor(IN_1) == 3){ // check if rgb sensor read "green"
            color_str = "Green";
-        }else if (Sensor(IN_1) == 4){
+	   /*until(Sensor(IN_1) == 1){ // rotate the rotate back to the street
+               OnRev(OUT_A, 30);
+           }*/
+        }else if (Sensor(IN_1) == 4){ //check if rgb sensor read "yellow"
            color_str = "Yellow";
-           /*OnFwd(OUT_AC, 30);
-           Wait(100);*/
-		       OnFwd(OUT_A, 30);
-           Wait(6700);
-           Off(OUT_A);
-        }else if (Sensor(IN_1) == 5){
+	   OnFwd(OUT_A, 30); 
+           Wait(6700); // rotate clockwise 90 degrees
+           Off(OUT_A); // stop motor to read the next color
+        }else if (Sensor(IN_1) == 5){ // check if rgb sensor read "red"
            color_str = "Red";
-		       OnFwd(OUT_A, 30);
-           Wait(13400);
-           Off(OUT_A);
-        }else if (Sensor(IN_1) == 6){
+	   OnFwd(OUT_A, 30);
+           Wait(13400); // rotate clockwise 180 degrees
+           Off(OUT_A); // stop motor to read the next color
+        }else if (Sensor(IN_1) == 6){ // check if rgb sensor read "white"
            color_str = "White";
-           /*until(Sensor(IN_1) == 1){
+           /*until(Sensor(IN_1) == 1){ // rotate the rotate back to the street
                OnRev(OUT_A, 30);
            }*/
         }
 
-        TextOut(0, 0, color_str);
+        TextOut(0, 0, color_str); // display current color on the monitor
     }
 }

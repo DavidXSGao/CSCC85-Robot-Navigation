@@ -7,9 +7,9 @@ task main() {
 
         if (Sensor(IN_1) == 1){ // check if rgb sensor read "black"
            color_str = "Black"; 
-		       OnFwd(OUT_AC, 30); // move forward with an output power of 30
-		       Wait(100); // move foward for 100 milliseconds
-		       Off(OUT_AC); // stop motors to read the next color
+	   OnFwd(OUT_AC, 30); // move forward with an output power of 30
+	   Wait(100); // move foward for 100 milliseconds
+	   Off(OUT_AC); // stop motors to read the next color
 
         }else if (Sensor(IN_1) == 2){ //check if rgb sensor read "blue"
            color_str = "Blue";

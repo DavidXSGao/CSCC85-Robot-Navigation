@@ -48,7 +48,7 @@ task main() {
            OnFwd(OUT_AC, 20);
            Wait(100);
            Off(OUT_AC);
-           n = Sensor(IN_1);
+           n = Sensor(IN_1); // store color at the north value
            TextOut(0, 0, NumToStr(n)); // display current color on the monitor
            // reset position
            until (Sensor(IN_1) == 4) {

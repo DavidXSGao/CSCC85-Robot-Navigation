@@ -1,0 +1,100 @@
+task main() {
+    string color_str; //string to display color on monitor for debugging
+    int n,e,s,w;
+
+    SetSensorColorFull(IN_1); //turn rbg sensor on
+
+    while (true) {
+
+        if (Sensor(IN_1) == 1){ // check if rgb sensor read "black"
+           color_str = "Black";
+           until (Sensor(IN_1) != 1) {
+               OnFwd(OUT_AC, 30); // move forward with an output power of 30
+           }
+	         Off(OUT_AC); // stop motors to read the next color
+
+        }
+        else if (Sensor(IN_1) == 2){ //check if rgb sensor read "blue"
+           color_str = "Blue";
+           OnRev(OUT_AC, 15);
+           Wait(100);
+           Off(OUT_AC);
+           while (Sensor(IN_1) == 2) {
+               OnFwd(OUT_A, 30);
+               OnRev(OUT_C, 30);
+           }
+           Off(OUT_AC);
+        }
+        else if (Sensor(IN_1) == 3){ //check if rgb sensor read "blue"
+           color_str = "Blue";
+           while (Sensor(IN_1) == 2) {
+               OnFwd(OUT_A, 30);
+               OnRev(OUT_C, 30);
+           }
+           Off(OUT_AC);
+        }
+
+        else if (Sensor(IN_1) == 6){ //check if rgb sensor read "white"
+           color_str = "White";
+           while (Sensor(IN_1) == 2) {
+               OnFwd(OUT_A, 30);
+               OnRev(OUT_C, 30);
+           }
+           Off(OUT_AC);
+        }
+        else if (Sensor(IN_1) == 4){ //check if rgb sensor read "yellow"
+           color_str = "Yellow";
+           // collect color that is ahead of me
+           OnFwd(OUT_AC, 20);
+           Wait(100);
+           Off(OUT_AC);
+           n = Sensor(IN_1);
+           TextOut(0, 0, NumToStr(n)); // display current color on the monitor
+           // reset position
+           until (Sensor(IN_1) == 4) {
+               OnRev(OUT_AC, 20);
+           }
+           Off(OUT_AC);
+           // collect color that is to the left of me
+           // turn left 90 degrees
+           OnFwd(OUT_C, 75);
+	         OnRev(OUT_A, 75);
+	         Wait(1050);
+           Off(OUT_AC);
+           // move forward to collect color
+           OnFwd(OUT_AC, 20);
+           Wait(100);
+           Off(OUT_AC);
+           w = Sensor(IN_1);
+           // reset position
+           OnRev(OUT_AC, 20);
+           Wait(100);
+           Off(OUT_AC);
+
+           // collect color that is to the right of me and continue
+           OnFwd(OUT_A, 75); // rotate clockwise 180 degrees
+           OnRev(OUT_C, 75);
+           Wait(2100);
+           Off(OUT_AC); // stop motor to read the next color
+           OnFwd(OUT_AC, 20);
+           Wait(100);
+           e = Sensor(IN_1);
+           Off(OUT_AC);
+
+        }
+
+
+        TextOut(0, 0, color_str); // display current color on the monitor
+    }
+}
+
+
+/*
+future todos:
+implement current code into starter code ;)
+figure out sound function with a functional nxt
+cover up the light sensor with a piece of paper
+navigate to the center
+keep track of places that have been to
+read green/blue as buildings
+*/

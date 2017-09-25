@@ -6,11 +6,14 @@ task main() {
     string sw = "unknown";
     bool red = false;
     bool yellow = false;
-
+    int temp1 = 0;
+    int temp2 = 0;
+    int temp3 = 0;
+    int temp4 = 0;
+    
     SetSensorColorFull(IN_1); //turn rbg sensor on
 
     while (true) {
-
         if (Sensor(IN_1) == 1){ // check if rgb sensor read "black"
            color_str = "Black";
            PlaySound(SOUND_UP);
@@ -18,6 +21,43 @@ task main() {
               OnRev(OUT_AC, 30);
            }
            if (yellow){
+               //until (temp1 > 0 && temp2 > 0 && temp3 > 0 && temp4 > 0 ){
+              if (temp1 != 0 && temp2 != 0 && temp3 != 0 && temp4 != 0 ){
+                 yellow = false;
+                 temp1 = 0;
+                 temp2 = 0;
+                 temp3 = 0;
+                 temp4 = 0;
+                 until (Sensor(IN_1) == 1){
+                       OnRev(OUT_A, 30);
+                       OnFwd(OUT_C, 30);
+                 }
+              }
+              OnRev(OUT_A, 30);
+              OnFwd(OUT_C, 30);
+              Wait(7300);
+              if (temp1 != 0 && temp2 != 0 && temp3 != 0){
+                 sw = color_str;
+              } else if (temp1 != 0 && temp2 != 0){
+                 se = color_str;
+              } else if (temp1 != 0){
+                nw = color_str;
+              } else {
+                ne = color_str;
+              }
+              
+              temp1 = strcmp(ne,"unknown");
+              temp2 = strcmp(nw,"unknown");
+              temp3 = strcmp(se,"unknown");
+              temp4 = strcmp(sw,"unknown");
+
+
+              // update direction var
+              if (temp1 > 0) {
+
+              }
+
+              //}
 
            }
            if (yellow == false && red == false){
@@ -53,11 +93,19 @@ task main() {
            if (red){
                  red = false;
                  OnRev(OUT_AC, 30);
+                 OnRev(OUT_A, 30);
+                 OnFwd(OUT_C, 30);
+                 Wait(3650);
+
            }else{
                  OnFwd(OUT_AC, 30);
+                 OnRev(OUT_A, 30);
+                 OnFwd(OUT_C, 30);
+                 Wait(3650);
+
            }
            Wait(1000);
-           //yellow = true;
+           yellow = true;
            Off(OUT_AC);
         }
 

@@ -4,6 +4,8 @@ task main() {
     string nw = "unknown";
     string se = "unknown";
     string sw = "unknown";
+    bool red = false;
+    bool yellow = false;
 
     SetSensorColorFull(IN_1); //turn rbg sensor on
 
@@ -11,8 +13,17 @@ task main() {
 
         if (Sensor(IN_1) == 1){ // check if rgb sensor read "black"
            color_str = "Black";
-           until (Sensor(IN_1) != 1) {
-               OnFwd(OUT_AC, 30); // move forward with an output power of 30
+           PlaySound(SOUND_UP);
+           if (red){
+              OnRev(OUT_AC, 30);
+           }
+           if (yellow){
+
+           }
+           if (yellow == false && red == false){
+               until (Sensor(IN_1) != 1) {
+                    OnFwd(OUT_AC, 30); // move forward with an output power of 30
+               }
            }
 	         Off(OUT_AC); // stop motors to read the next color
 
@@ -20,8 +31,8 @@ task main() {
         
         else if (Sensor(IN_1) == 2){ //check if rgb sensor read "blue"
            color_str = "Blue";
+           PlaySound(SOUND_CLICK);
            while (Sensor(IN_1) != 1) {
-               OnFwd(OUT_C, 30);
                OnRev(OUT_A, 30);
            }
            Off(OUT_AC);
@@ -29,8 +40,8 @@ task main() {
         
         else if (Sensor(IN_1) == 3){ //check if rgb sensor read "blue"
            color_str = "Green";
+           PlaySound(SOUND_DOUBLE_BEEP);
            while (Sensor(IN_1) != 1) {
-               OnFwd(OUT_C, 30);
                OnRev(OUT_A, 30);
            }
            Off(OUT_AC);
@@ -38,63 +49,40 @@ task main() {
 
         else if (Sensor(IN_1) == 4){ //check if rgb sensor read "yellow"
            color_str = "Yellow";
-           // collect color that is ahead of me
-           OnFwd(OUT_AC, 20);
-           Wait(100);
-           Off(OUT_AC);
-           //ne = Sensor(IN_1); // store color at the north value
-           //TextOut(0, 0, NumToStr(n)); // display current color on the monitor
-           // reset position
-           until (Sensor(IN_1) == 4) {
-               OnRev(OUT_AC, 20);
-           }
-           Off(OUT_AC);
-           // collect color that is to the left of me
-           // turn left 90 degrees
-           OnFwd(OUT_C, 75);
-	         OnRev(OUT_A, 75);
-	         Wait(1050);
-           Off(OUT_AC);
-           // move forward to collect color
-           OnFwd(OUT_AC, 20);
-           Wait(100);
-           Off(OUT_AC);
-           //nw = Sensor(IN_1);
-           // reset position
-           OnRev(OUT_AC, 20);
-           Wait(100);
-           Off(OUT_AC);
-
-           // collect color that is to the right of me and continue
-           OnFwd(OUT_A, 75); // rotate clockwise 180 degrees
-           OnRev(OUT_C, 75);
-           Wait(2100);
-           Off(OUT_AC); // stop motor to read the next color
-           OnFwd(OUT_AC, 20);
-           Wait(100);
-           //es = Sensor(IN_1);
+           PlaySound(SOUND_DOWN);
+           red = false;
+           OnRev(OUT_AC, 30);
+           Wait(1000);
+           //yellow = true;
            Off(OUT_AC);
         }
         
         else if (Sensor(IN_1) == 5){ // check if rgb sensor read "red"
            color_str = "Red";
-          while (Sensor(IN_1) != 1) {
+           PlaySound(SOUND_LOW_BEEP);
+           /*while (Sensor(IN_1) != 1) {
                OnFwd(OUT_C, 30);
                OnRev(OUT_A, 30);
-           }
+           }*/
+           OnRev(OUT_AC, 30);
+           Wait(1000);
+           red = true;
            Off(OUT_AC);
         }
         
         else if (Sensor(IN_1) == 6){ //check if rgb sensor read "white"
            color_str = "White";
+           PlaySound(SOUND_FAST_UP);
            while (Sensor(IN_1) != 1) {
-               OnFwd(OUT_C, 30);
                OnRev(OUT_A, 30);
            }
            Off(OUT_AC);
         }
 
-
+        TextOut(0, 10, "NE: " + ne);
+        TextOut(0, 20, "NW: " + nw);
+        TextOut(0, 30, "SE: " + se);
+        TextOut(0, 40, "SW: " + sw);
         TextOut(0, 0, color_str); // display current color on the monitor
     }
 }

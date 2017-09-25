@@ -28,7 +28,7 @@ task main() {
 	         Off(OUT_AC); // stop motors to read the next color
 
         }
-        
+
         else if (Sensor(IN_1) == 2){ //check if rgb sensor read "blue"
            color_str = "Blue";
            PlaySound(SOUND_CLICK);
@@ -37,7 +37,7 @@ task main() {
            }
            Off(OUT_AC);
         }
-        
+
         else if (Sensor(IN_1) == 3){ //check if rgb sensor read "blue"
            color_str = "Green";
            PlaySound(SOUND_DOUBLE_BEEP);
@@ -50,13 +50,17 @@ task main() {
         else if (Sensor(IN_1) == 4){ //check if rgb sensor read "yellow"
            color_str = "Yellow";
            PlaySound(SOUND_DOWN);
-           red = false;
-           OnRev(OUT_AC, 30);
+           if (red){
+                 red = false;
+                 OnRev(OUT_AC, 30);
+           }else{
+                 OnFwd(OUT_AC, 30);
+           }
            Wait(1000);
            //yellow = true;
            Off(OUT_AC);
         }
-        
+
         else if (Sensor(IN_1) == 5){ // check if rgb sensor read "red"
            color_str = "Red";
            PlaySound(SOUND_LOW_BEEP);
@@ -69,7 +73,7 @@ task main() {
            red = true;
            Off(OUT_AC);
         }
-        
+
         else if (Sensor(IN_1) == 6){ //check if rgb sensor read "white"
            color_str = "White";
            PlaySound(SOUND_FAST_UP);

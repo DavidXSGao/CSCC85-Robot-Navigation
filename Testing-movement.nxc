@@ -10,7 +10,9 @@ task main() {
     int temp2 = 0;
     int temp3 = 0;
     int temp4 = 0;
-    
+
+    int counter = 0;
+
     SetSensorColorFull(IN_1); //turn rbg sensor on
 
     while (true) {
@@ -18,46 +20,31 @@ task main() {
            color_str = "Black";
            PlaySound(SOUND_UP);
            if (red){
-              OnRev(OUT_AC, 30);
+              until (Sensor(IN_1) != 1) {
+                    OnRev(OUT_AC, 30); // move backwards with an output power of 30
+               }
            }
            if (yellow){
-               //until (temp1 > 0 && temp2 > 0 && temp3 > 0 && temp4 > 0 ){
-              if (temp1 != 0 && temp2 != 0 && temp3 != 0 && temp4 != 0 ){
-                 yellow = false;
-                 temp1 = 0;
-                 temp2 = 0;
-                 temp3 = 0;
-                 temp4 = 0;
-                 until (Sensor(IN_1) == 1){
-                       OnRev(OUT_A, 30);
-                       OnFwd(OUT_C, 30);
-                 }
-              }
-              OnRev(OUT_A, 30);
-              OnFwd(OUT_C, 30);
-              Wait(7300);
-              if (temp1 != 0 && temp2 != 0 && temp3 != 0){
-                 sw = color_str;
-              } else if (temp1 != 0 && temp2 != 0){
-                 se = color_str;
-              } else if (temp1 != 0){
-                nw = color_str;
-              } else {
-                ne = color_str;
-              }
-              
               temp1 = strcmp(ne,"unknown");
               temp2 = strcmp(nw,"unknown");
               temp3 = strcmp(se,"unknown");
               temp4 = strcmp(sw,"unknown");
-
-
-              // update direction var
-              if (temp1 > 0) {
-
+              //if (temp1 != 0 && temp2 != 0 && temp3 != 0 && temp4 != 0 ){
+              if (counter == 4){
+                 yellow = false;
+                 ne = "unknown";
+                 nw = "unknown";
+                 se = "unknown";
+                 sw = "unknown";
+                 temp1 = 0;
+                 temp2 = 0;
+                 temp3 = 0;
+                 temp4 = 0;
+              }else{
+                    OnRev(OUT_A, 40);
+                    OnFwd(OUT_C, 30);
+                    Wait(2000);
               }
-
-              //}
 
            }
            if (yellow == false && red == false){
@@ -69,42 +56,22 @@ task main() {
 
         }
 
-        else if (Sensor(IN_1) == 2){ //check if rgb sensor read "blue"
-           color_str = "Blue";
-           PlaySound(SOUND_CLICK);
-           while (Sensor(IN_1) != 1) {
-               OnRev(OUT_A, 30);
-           }
-           Off(OUT_AC);
-        }
-
-        else if (Sensor(IN_1) == 3){ //check if rgb sensor read "blue"
-           color_str = "Green";
-           PlaySound(SOUND_DOUBLE_BEEP);
-           while (Sensor(IN_1) != 1) {
-               OnRev(OUT_A, 30);
-           }
-           Off(OUT_AC);
-        }
-
         else if (Sensor(IN_1) == 4){ //check if rgb sensor read "yellow"
            color_str = "Yellow";
            PlaySound(SOUND_DOWN);
            if (red){
                  red = false;
-                 OnRev(OUT_AC, 30);
-                 OnRev(OUT_A, 30);
+                 OnRev(OUT_A, 40);
                  OnFwd(OUT_C, 30);
-                 Wait(3650);
+                 Wait(3640);
 
            }else{
                  OnFwd(OUT_AC, 30);
-                 OnRev(OUT_A, 30);
+                 Wait(1000);
+                 OnRev(OUT_A, 40);
                  OnFwd(OUT_C, 30);
-                 Wait(3650);
-
+                 Wait(3640);
            }
-           Wait(1000);
            yellow = true;
            Off(OUT_AC);
         }
@@ -117,24 +84,133 @@ task main() {
                OnRev(OUT_A, 30);
            }*/
            OnRev(OUT_AC, 30);
-           Wait(1000);
+           Wait(400);
            red = true;
            Off(OUT_AC);
+        }
+
+        else if (Sensor(IN_1) == 2){ //check if rgb sensor read "blue"
+           color_str = "Blue";
+           PlaySound(SOUND_CLICK);
+           if (yellow){
+
+              /*temp1 = strcmp(ne,"unknown");
+              temp2 = strcmp(nw,"unknown");
+              temp3 = strcmp(se,"unknown");
+              temp4 = strcmp(sw,"unknown");
+
+              if (temp1 != 0 && temp2 != 0 && temp3 != 0){
+                sw = color_str;
+              } else if (temp1 != 0 && temp2 != 0){
+                se = color_str;
+              } else if (temp1 != 0){
+                nw = color_str;
+              } else {
+                ne = color_str;
+              }*/
+              counter++ ;
+
+              until (Sensor(IN_1) == 1){
+                       OnRev(OUT_A, 40);
+                       OnFwd(OUT_C, 30);
+              }
+              Off(OUT_AC);
+
+           }
+           else{
+                while (Sensor(IN_1) != 1) {
+                    OnRev(OUT_A, 40);
+                    OnFwd(OUT_C, 30);
+                    Wait(100);
+                }
+                Off(OUT_A);
+           }
+        }
+
+        else if (Sensor(IN_1) == 3){ //check if rgb sensor read "green"
+           color_str = "Green";
+           PlaySound(SOUND_DOUBLE_BEEP);
+           if (yellow){
+
+              /*temp1 = strcmp(ne,"unknown");
+              temp2 = strcmp(nw,"unknown");
+              temp3 = strcmp(se,"unknown");
+              temp4 = strcmp(sw,"unknown");
+
+              if (temp1 != 0 && temp2 != 0 && temp3 != 0){
+                sw = color_str;
+              } else if (temp1 != 0 && temp2 != 0){
+                se = color_str;
+              } else if (temp1 != 0){
+                nw = color_str;
+              } else {
+                ne = color_str;
+              }*/
+
+              counter++ ;
+
+              until (Sensor(IN_1) == 1){
+                       OnRev(OUT_A, 40);
+                       OnFwd(OUT_C, 30);
+              }
+              Off(OUT_AC);
+
+           }
+           else{
+                while (Sensor(IN_1) != 1) {
+                    OnRev(OUT_A, 40);
+                    OnFwd(OUT_C, 30);
+                    Wait(100);
+                }
+                Off(OUT_A);
+           }
         }
 
         else if (Sensor(IN_1) == 6){ //check if rgb sensor read "white"
            color_str = "White";
            PlaySound(SOUND_FAST_UP);
-           while (Sensor(IN_1) != 1) {
-               OnRev(OUT_A, 30);
+           if (yellow){
+
+              /*temp1 = strcmp(ne,"unknown");
+              temp2 = strcmp(nw,"unknown");
+              temp3 = strcmp(se,"unknown");
+              temp4 = strcmp(sw,"unknown");
+
+              if (temp1 != 0 && temp2 != 0 && temp3 != 0){
+                sw = color_str;
+              } else if (temp1 != 0 && temp2 != 0){
+                se = color_str;
+              } else if (temp1 != 0){
+                nw = color_str;
+              } else {
+                ne = color_str;
+              }*/
+
+              counter++ ;
+
+              until (Sensor(IN_1) == 1){
+                    OnRev(OUT_A, 40);
+                    OnFwd(OUT_C, 30);
+              }
+              Off(OUT_AC);
+
            }
-           Off(OUT_AC);
+           else{
+                while (Sensor(IN_1) != 1) {
+                    OnRev(OUT_A, 40);
+                    OnFwd(OUT_C, 30);
+                    Wait(100);
+                }
+                Off(OUT_A);
+           }
         }
 
-        TextOut(0, 10, "NE: " + ne);
+
+        /*TextOut(0, 10, "NE: " + ne);
         TextOut(0, 20, "NW: " + nw);
         TextOut(0, 30, "SE: " + se);
-        TextOut(0, 40, "SW: " + sw);
+        TextOut(0, 40, "SW: " + sw);*/
+
         TextOut(0, 0, color_str); // display current color on the monitor
     }
 }

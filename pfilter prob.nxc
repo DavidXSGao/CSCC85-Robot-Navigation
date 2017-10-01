@@ -49,9 +49,32 @@
 
    decide these values for yourself
    */
-#define THRESHOLD
+#define THRESHOLD 85
 #define MATCH
 #define MISMATCH
+
+#define SPEED 30
+#define ROTATIONA 40
+
+#define BLACKAVGR 40
+#define BLACKAVGG 45
+#define BLACKAVGB 40
+#define REDAVGR 235
+#define REDAVGG 92
+#define REDAVGB 64
+#define YELLOWAVGR 228
+#define YELLOWAVGG 212
+#define YELLOWAVGB 95
+#define BLUEAVGR 85
+#define BLUEAVGG 88
+#define BLUEAVGB 120
+#define GREENAVGR 74
+#define GREENAVGG 124
+#define GREENAVGB 65
+#define WHITEAVGR 2SPEED
+#define WHITEAVGG 210
+#define WHITEAVGB 220
+ 
 
 /* You may want to define macros to keep track of certain turning angles and
    speeds throughout your code. This provides an easy way to change them */
@@ -106,7 +129,29 @@ sub move_robot(){
     //  make turns perfectly and go straight forward each time.
     //
     ////////////////////////////////////////////////////////////////////////////
-
+	bool red = false;
+	
+	while(true){
+		if(get_color() == 1){
+			if (red){
+			   until (get_color() != 1) {
+					 OnRev(OUT_AC, SPEED); // move backwards with an output power of SPEED
+				}
+			}else{
+				until (get_color() != 1) {
+					 OnFwd(OUT_AC, SPEED); // move forwards with an output power of SPEED
+				}
+			}
+		}else if(get_color() == 5){
+			red = true;
+			until (get_color() == 1) {
+				OnRev(OUT_AC, SPEED); // move backwards with an output power of SPEED
+			}
+		}else if (get_color() == 4){
+			red = false;
+			scan_surroundings();
+		}
+	}
 
 }
 
@@ -127,21 +172,29 @@ intersection scan_surroundings(){
     //
     ////////////////////////////////////////////////////////////////////////////
     while(rsense.NE == 0 || rsense.NW == 0 || rsense.SE == 0 || rsense.SW == 0){
-        OnRev(OUT_A, 40);
-        OnFwd(OUT_C, 30);
-        if (Sensor(IN_1) == 1){
+        OnRev(OUT_A, ROTATIONA);
+        OnFwd(OUT_C, SPEED);
+        if (get_color() == 1){
            continue;
         }else{
            if (rsense.NE == 0 && rsense.NW == 0 && rsense.SE == 0 &&
            rsense.SW == 0){
-              rsense.NE = Sensor(IN_1);
+              rsense.NE = get_color();
            }else if (rsense.NW == 0 && rsense.SE == 0 && rsense.SW == 0){
-              rsense.SE = Sensor(IN_1);
+              rsense.SE = get_color();
            }else if (rsense.NW == 0 && rsense.SW == 0){
-              rsense.SW = Sensor(IN_1);
+              rsense.SW = get_color();
            }else{
-              rsense.NW = Sensor(IN_1);
+              rsense.NW = get_color();
            }
+    }
+	/*until (get_color() != 1){        // 90 degrees left
+       OnFwd(OUT_A, ROTATIONA);
+       OnRev(OUT_C, SPEED);
+    }*/
+	until (get_color() != 1){        // back to original position
+       OnRev(OUT_A, ROTATIONA);
+       OnFwd(OUT_C, SPEED);
     }
     return rsense;
 }
@@ -159,41 +212,53 @@ sub change_direction(int orig, int new){
     // Implement each of the turns specified below.
     //
     ////////////////////////////////////////////////////////////////////////////
-
+	int curr_color = get_color();
     int change = new - orig;
     /* selects the appropriate turn based on the headings given*/
     switch (change){
            case 3:
                 //turn left 45 degrees
-                until (){        // color changes
-                   OnFwd(OUT_A, 40);
-                   OnRev(OUT_C, 30);
+                until (get_color() != curr_color){        // color changes
+                   OnFwd(OUT_A, ROTATIONA);
+                   OnRev(OUT_C, SPEED);
                 }
                 break;
            case -1:
                 //turn left 90 degrees
                 /* code solution here */
-                until (){       // color changes twice
-                   OnFwd(OUT_A, 40);
-                   OnRev(OUT_C, 30);
+                until (get_color() != curr_color){       // color changes twice
+                   OnFwd(OUT_A, ROTATIONA);
+                   OnRev(OUT_C, SPEED);
+                }
+				int second_color = get_color();
+				until (get_color() != second_color){       // color changes twice
+                   OnFwd(OUT_A, ROTATIONA);
+                   OnRev(OUT_C, SPEED);
                 }
                 break;
            case -3:
                 //turn right 45 degrees
-                until (){       // color changes
-                   OnRev(OUT_A, 40);
-                   OnFwd(OUT_C, 30);
+                until (get_color() != curr_color){       // color changes
+                   OnRev(OUT_A, ROTATIONA);
+                   OnFwd(OUT_C, SPEED);
                 }
                 break;
            case 1:
                 //turn right 90 degrees
                 /* code solution here */
-                until (){       // color changes
-                   OnRev(OUT_A, 40);
-                   OnFwd(OUT_C, 30);
+                until (get_color() != curr_color){       // color changes
+                   OnRev(OUT_A, ROTATIONA);
+                   OnFwd(OUT_C, SPEED);
+                }
+				int second_color = get_color();
+				until (get_color() != second_color){       // color changes twice
+                   OnRev(OUT_A, ROTATIONA);
+                   OnFwd(OUT_C, SPEED);
                 }
                 break;
            case 2:
+				
+		   
 	         case -2:
                 // 180 degree turn
                 /* code solution here */
@@ -482,7 +547,7 @@ task main(){
                                probability is obtained */
       /* implement me */
    }
-   PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
+   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
    
    /* When we are fairly confident about the robot's position, we can move on
       to the task given.
@@ -494,7 +559,8 @@ task main(){
       
    */
    guess[2] = move_to(guess[0]*GHEIGHT + guess[1], target, guess[2]);
-   PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
+   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
    move_to(target, dest,guess[2]);
-   PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
+   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
 }
+

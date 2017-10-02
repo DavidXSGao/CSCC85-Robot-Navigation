@@ -6,10 +6,10 @@
   Using the grid based map accompanying the code, the robot which initially
   has no information about its coordinate position will be able to locate itself
   and move to a specific target and destination.
-  
+
   The NXT robot uses aspects of particle filters and probability sensing to
   determine which position it is likely at.
-  
+
 */
 
 /* the following section defines macros */
@@ -74,7 +74,7 @@
 #define WHITEAVGR 230
 #define WHITEAVGG 210
 #define WHITEAVGB 220
- 
+
 
 /* You may want to define macros to keep track of certain turning angles and
    speeds throughout your code. This provides an easy way to change them */
@@ -88,40 +88,102 @@
    actual position and heading of the robot. This is updated based on the
    robot's surroundings.
    */
-struct particle{
-       int x;
-       int y;
-       int theta;
-       float prob; /* weight of a particle representing probability */
+struct particle {
+    int x;
+    int y;
+    int theta;
+    float prob; /* weight of a particle representing probability */
 };
 
-/* Represents an interesection (yellow square) on the grid.
+/* Represents an intersection (yellow square) on the grid.
 
    Holds data on the surroundings of the intersection, namely coloured(or white)
-   squares to the NE, SE, SW, NW of the interesection.
-   
+   squares to the NE, SE, SW, NW of the intersection.
+
    Note that the directions are by default in terms of compass directions.
    When given a heading, the directions will change relative to the heading.
    */
-struct intersection{
+struct intersection {
 
-       int NE;
-       int SE;
-       int SW;
-       int NW;
+    int NE;
+    int SE;
+    int SW;
+    int NW;
 };
+int get_color(ColorSensorReadType &csr) {
+
+    bool red = true,
+         black = true,
+         blue = true,
+         green = true,
+         yellow = true,
+         white = true;
+
+    // check if input color is black
+    black&=csr.NormalizedArray[0] <= BLACKAVGR * 1.8;
+    black&=csr.NormalizedArray[0] >= BLACKAVGR / 1.8;
+    black&=csr.NormalizedArray[1] <= BLACKAVGG * 1.8;
+    black&=csr.NormalizedArray[1] >= BLACKAVGG / 1.8;
+    black&=csr.NormalizedArray[2] <= BLACKAVGB * 1.8;
+    black&=csr.NormalizedArray[2] >= BLACKAVGB / 1.8;
+
+    // check if input color is yellow
+    yellow&=csr.NormalizedArray[0] <= YELLOWAVGR * 1.1;
+    yellow&=csr.NormalizedArray[0] >= YELLOWAVGR / 1.1;
+    yellow&=csr.NormalizedArray[1] <= YELLOWAVGG * 1.1;
+    yellow&=csr.NormalizedArray[1] >= YELLOWAVGG / 1.1;
+    yellow&=csr.NormalizedArray[2] <= YELLOWAVGB * 1.1;
+    yellow&=csr.NormalizedArray[2] >= YELLOWAVGB / 1.1;
+    // check if input color is red
+    red&=csr.NormalizedArray[0] <= REDAVGR * 1.3;
+    red&=csr.NormalizedArray[0] >= REDAVGR / 1.3;
+    red&=csr.NormalizedArray[1] <= REDAVGG * 1.3;
+    red&=csr.NormalizedArray[1] >= REDAVGG / 1.3;
+    red&=csr.NormalizedArray[2] <= REDAVGB * 1.3;
+    red&=csr.NormalizedArray[2] >= REDAVGB / 1.3;
+    // check if input color is blue
+    blue&=csr.NormalizedArray[0] <= BLUEAVGR * 1.3;
+    blue&=csr.NormalizedArray[0] >= BLUEAVGR / 1.3;
+    blue&=csr.NormalizedArray[1] <= BLUEAVGG * 1.3;
+    blue&=csr.NormalizedArray[1] >= BLUEAVGG / 1.3;
+    blue&=csr.NormalizedArray[2] <= BLUEAVGB * 1.3;
+    blue&=csr.NormalizedArray[2] >= BLUEAVGB / 1.3;
+    // check if input color is green
+    green&=csr.NormalizedArray[0] <= GREENAVGR * 1.3;
+    green&=csr.NormalizedArray[0] >= GREENAVGR / 1.3;
+    green&=csr.NormalizedArray[1] <= GREENAVGG * 1.3;
+    green&=csr.NormalizedArray[1] >= GREENAVGG / 1.3;
+    green&=csr.NormalizedArray[2] <= GREENAVGB * 1.3;
+    green&=csr.NormalizedArray[2] >= GREENAVGB / 1.3;
+    // check if input color is white
+    white&=csr.NormalizedArray[0] <= WHITEAVGR * 1.1;
+    white&=csr.NormalizedArray[0] >= WHITEAVGR / 1.1;
+    white&=csr.NormalizedArray[1] <= WHITEAVGG * 1.1;
+    white&=csr.NormalizedArray[1] >= WHITEAVGG / 1.1;
+    white&=csr.NormalizedArray[2] <= WHITEAVGB * 1.1;
+    white&=csr.NormalizedArray[2] >= WHITEAVGB / 1.1;
+
+    if (black) {return 1;}
+    else if (blue) {return 2;}
+    else if (green) {return 3;}
+    else if (yellow) {return 4;}
+    else if (red) {return 5;}
+    else if (white) {return 6;}
+    else {return -1;}
+
+}
 
 /* function prototypes, to be added if needed
 */
 
 /* Subroutine which moves the robot forward from one intersection to the next
 */
-sub move_robot(){
+sub move_robot(ColorSensorReadType &csr) {
     ////////////////////////////////////////////////////////////////////////////
     //  TO DO:
     //
     //  Complete this subroutine.
-    //  Your robot will need to nagivates its way from one interesection to the
+    //  Your robot will need to nagivates its way from one intersection to the
     //  next. If it reaches a red boundary, it will do a 180 degree turn and
     //  return to the previous intersection facing in the opposite direction.
     //
@@ -129,75 +191,154 @@ sub move_robot(){
     //  make turns perfectly and go straight forward each time.
     //
     ////////////////////////////////////////////////////////////////////////////
-	bool red = false;
-	
-	while(true){
-		if(get_color() == 1){
-			if (red){
-			   until (get_color() != 1) {
-					 OnRev(OUT_AC, SPEED); // move backwards with an output power of SPEED
-				}
-			}else{
-				until (get_color() != 1) {
-					 OnFwd(OUT_AC, SPEED); // move forwards with an output power of SPEED
-				}
-			}
-		}else if(get_color() == 5){
-			red = true;
-			until (get_color() == 1) {
-				OnRev(OUT_AC, SPEED); // move backwards with an output power of SPEED
-			}
-		}else if (get_color() == 4){
-			red = false;
-			scan_surroundings();
-		}
-	}
+    bool red = false;
+    int prev_color = 0;
+    int current_color = -1;
 
+    while(true) {
+
+        SysColorSensorRead(csr);
+//        ClearScreen();
+
+        current_color = get_color(csr);
+
+        NumOut(0,LCD_LINE1,csr.NormalizedArray[0]);
+        NumOut(0,LCD_LINE2,csr.NormalizedArray[1]);
+        NumOut(0,LCD_LINE3,csr.NormalizedArray[2]);
+
+        if (prev_color == 0 && current_color != -1) {
+            prev_color = current_color;
+        }
+        else if (prev_color != -1 && current_color == -1) {
+            current_color = prev_color;
+        }
+
+//        NumOut(0, LCD_LINE5, prev_color);
+//        NumOut(0, LCD_LINE6, current_color);
+
+        if (current_color == -1){
+        Off(OUT_AC);
+        Wait(1000);}
+        if(current_color == 1) {
+            if (red) { // move from red to yellow
+                OnRev(OUT_AC, SPEED); // move backwards with an output power of SPEED
+            } else {
+                OnFwd(OUT_AC, SPEED); // move forwards with an output power of SPEED
+            }
+        } else if(current_color == 5) { // reads red
+            red = true;
+            OnRev(OUT_AC, SPEED); // move backwards with an output power of SPEED
+        } else if (current_color == 4) { // read yellow
+            if (red != true) {
+                until (current_color == 1) {
+                    OnFwd(OUT_AC, SPEED);
+                    SysColorSensorRead(csr);
+                    current_color = get_color(csr);
+                }
+            }
+            red = false;
+            break;
+
+        } else { //went off black, rotate back to black
+//		    OnRev(OUT_A, ROTATIONA);
+//            OnFwd(OUT_C, SPEED);
+//            Off(OUT_AC);
+        }
+        if (current_color != -1) {
+            prev_color = current_color;
+        }
+    }
 }
 
 /* This function scans the surroundings of the robot.
    It takes readings of the colour of the 4 squares surrounding the
    intersection and returns an intersection variable which holds the data.
 */
-intersection scan_surroundings(){
+
+intersection scan_surroundings(ColorSensorReadType &csr) {
     intersection rsense;
+
     ////////////////////////////////////////////////////////////////////////////
     // TO DO:
     //
     // Implement a function in which the robot will scan the colour of the
-    // surrounding squares at an interesection.
+    // surrounding squares at an intersection.
     // It will use the colour sensor to take readings from all four squares
     // in each of the NE, SE, SW, NW directions relative to the forward facing
     // direction of the robot.
     //
     ////////////////////////////////////////////////////////////////////////////
-    while(rsense.NE == 0 || rsense.NW == 0 || rsense.SE == 0 || rsense.SW == 0){
+    int current_color;
+    int prev_color = 0;
+    bool wait = false;
+    while(rsense.NE == 0 || rsense.NW == 0 || rsense.SE == 0 || rsense.SW == 0) {
         OnRev(OUT_A, ROTATIONA);
         OnFwd(OUT_C, SPEED);
-        if (get_color() == 1){
-           continue;
-        }else{
-           if (rsense.NE == 0 && rsense.NW == 0 && rsense.SE == 0 &&
-           rsense.SW == 0){
-              rsense.NE = get_color();
-           }else if (rsense.NW == 0 && rsense.SE == 0 && rsense.SW == 0){
-              rsense.SE = get_color();
-           }else if (rsense.NW == 0 && rsense.SW == 0){
-              rsense.SW = get_color();
-           }else{
-              rsense.NW = get_color();
-           }
+        SysColorSensorRead(csr);
+        ClearScreen();
+        current_color = get_color(csr);
+        if (current_color != -1 && prev_color == 0){
+            prev_color = current_color;
+        }
+        if (current_color == -1 && prev_color != 0){
+            current_color = prev_color;
+        }
+        NumOut(0,LCD_LINE1,csr.NormalizedArray[0]);
+        NumOut(0,LCD_LINE2,csr.NormalizedArray[1]);
+        NumOut(0,LCD_LINE3,csr.NormalizedArray[2]);
+
+
+
+        if (current_color == 1) {
+            wait = false;
+//            continue;
+        } else if (wait == false){
+            if (rsense.NE == 0 && rsense.NW == 0 && rsense.SE == 0 &&
+                    rsense.SW == 0) {
+                rsense.NE = current_color;
+                wait = true;
+            } else if (rsense.NW == 0 && rsense.SE == 0 && rsense.SW == 0) {
+                rsense.SE = current_color;
+                wait = true;
+            } else if (rsense.NW == 0 && rsense.SW == 0) {
+                rsense.SW = current_color;
+                wait = true;
+            } else {
+                rsense.NW = current_color;
+                wait = true;
+            }
+        }
+        if (current_color != -1){
+            prev_color = current_color;
+        }
+
+        NumOut(0, LCD_LINE5, rsense.NE);
+        NumOut(0, LCD_LINE6, rsense.SE);
+        NumOut(0, LCD_LINE7, rsense.SW);
+        NumOut(0, LCD_LINE8, rsense.NW);
+        Wait(10);
     }
-	/*until (get_color() != 1){        // 90 degrees left
-       OnFwd(OUT_A, ROTATIONA);
-       OnRev(OUT_C, SPEED);
-    }*/
-	until (get_color() != 1){        // back to original position
-       OnRev(OUT_A, ROTATIONA);
-       OnFwd(OUT_C, SPEED);
+
+    ClearScreen();
+    /*until (get_color(csr) != 1){        // 90 degrees left
+               OnFwd(OUT_A, ROTATIONA);
+               OnRev(OUT_C, SPEED);
+            }*/
+
+    SysColorSensorRead(csr);
+    current_color = get_color(csr);
+    NumOut(0, LCD_LINE1, prev_color);
+    NumOut(0, LCD_LINE2, current_color);
+    until (current_color != 1) {       // back to original position
+        OnRev(OUT_A, ROTATIONA);
+        OnFwd(OUT_C, SPEED);
+        SysColorSensorRead(csr);
+        current_color = get_color(csr);
     }
+    Wait(10000);
     return rsense;
 }
+
 
 
 /* Given the original heading and a new heading, turns the robot to reflect
@@ -205,95 +346,101 @@ intersection scan_surroundings(){
 
    This subroutine is used after the robot knows its position
    */
-sub change_direction(int orig, int new){
+
+/*sub change_direction(int c){
     ////////////////////////////////////////////////////////////////////////////
     // TO DO:
     //
     // Implement each of the turns specified below.
     //
     ////////////////////////////////////////////////////////////////////////////
-	int curr_color = get_color();
-    int change = new - orig;
-    /* selects the appropriate turn based on the headings given*/
-    switch (change){
+    int curr_color; //= get_color(csr);
+//    int change = new - orig;
+    int second_color;
+    *//*
+*//* selects the appropriate turn based on the headings given*//*
+
+    switch (c){
            case 3:
                 //turn left 45 degrees
-                until (get_color() != curr_color){        // color changes
+                until (get_color(csr) != curr_color){        // color changes
                    OnFwd(OUT_A, ROTATIONA);
                    OnRev(OUT_C, SPEED);
                 }
                 break;
            case -1:
                 //turn left 90 degrees
-                /* code solution here */
-                until (get_color() != curr_color){       // color changes twice
+
+                until (get_color(csr) != curr_color){       // color changes twice
                    OnFwd(OUT_A, ROTATIONA);
                    OnRev(OUT_C, SPEED);
                 }
-				int second_color = get_color();
-				until (get_color() != second_color){       // color changes twice
+				second_color = get_color(csr);
+				until (get_color(csr) != second_color){       // color changes twice
                    OnFwd(OUT_A, ROTATIONA);
                    OnRev(OUT_C, SPEED);
                 }
                 break;
            case -3:
                 //turn right 45 degrees
-                until (get_color() != curr_color){       // color changes
+                until (get_color(csr) != curr_color){       // color changes
                    OnRev(OUT_A, ROTATIONA);
                    OnFwd(OUT_C, SPEED);
                 }
                 break;
            case 1:
                 //turn right 90 degrees
-                /* code solution here */
-                until (get_color() != curr_color){       // color changes
+
+                until (get_color(csr) != curr_color){       // color changes
                    OnRev(OUT_A, ROTATIONA);
                    OnFwd(OUT_C, SPEED);
                 }
-				int second_color = get_color();
-				until (get_color() != second_color){       // color changes twice
+				second_color = get_color(csr);
+				until (get_color(csr) != second_color){       // color changes twice
                    OnRev(OUT_A, ROTATIONA);
                    OnFwd(OUT_C, SPEED);
                 }
                 break;
-           case 2:	
+           case 2:
 		   case -2:
                 // 180 degree turn
-                /* code solution here */
-                until (get_color() != curr_color){       // color changes
+
+                until (get_color(csr) != curr_color){       // color changes
                    OnRev(OUT_A, ROTATIONA);
                    OnFwd(OUT_C, SPEED);
                 }
-				int second_color = get_color();
-				until (get_color() != second_color){       // color changes twice
+				int second_color = get_color(csr);
+				until (get_color(csr) != second_color){       // color changes twice
                    OnRev(OUT_A, ROTATIONA);
                    OnFwd(OUT_C, SPEED);
                 }
-				int third_color = get_color();
-				until (get_color() != second_color){       // color changes three times
+				int third_color = get_color(csr);
+				until (get_color(csr) != second_color){       // color changes three times
                    OnRev(OUT_A, ROTATIONA);
                    OnFwd(OUT_C, SPEED);
-                }int forth_color = get_color();
-				until (get_color() != second_color){       // color changes four times
+                }int forth_color = get_color(csr);
+				until (get_color(csr) != second_color){       // color changes four times
                    OnRev(OUT_A, ROTATIONA);
                    OnFwd(OUT_C, SPEED);
                 }
                 break;
     }
-}
+}*/
+
 
 
 /* Given a start coordinate, finish coordinate, and a heading, this function
    moves the robot from the start to finish.
-   
+
    The coordinates given are in terms of index in the map array. The x and y
    coordinates need to be extracted from that index.
-   
+
    After the robot has finished moving, the current heading of the robot is
    returned.
-   
+
    This function is used after the robot knows it's own position.
 */
+/*
 int move_to(int s, int f, int h){
     int sx, sy, fx, fy, tx, ty;
     int heading;
@@ -302,8 +449,10 @@ int move_to(int s, int f, int h){
     sy = s%GHEIGHT;
     fx = f/GHEIGHT;
     fy = f%GHEIGHT;
-    
-    /* calculate how far to go in manhatten distances */
+
+    */
+/* calculate how far to go in manhatten distances *//*
+
     tx = fx - sx;
     ty = fy - sy;
     heading = h;
@@ -316,8 +465,8 @@ int move_to(int s, int f, int h){
     // makes turns.
     //
     ////////////////////////////////////////////////////////////////////////////
-    /*
-    4 if statments depending on heading
+
+    // 4 if statments depending on heading
 	if (heading == NORTH){
 		if(ty > 0){
 			while(ty > 0){
@@ -325,20 +474,20 @@ int move_to(int s, int f, int h){
 			   ty--;
 			}
 		}else{
-			change_direction(int orig, int new); // 180 degrees
+//			change_direction(int orig, int new); // 180 degrees
 			while(ty < 0){
 			   move_robot();
 			   ty++;
 			}
 		}
 		if (tx > 0){
-			change_direction(int orig, int new); // 90 degrees right
+//			change_direction(int orig, int new); // 90 degrees right
 			while(tx > 0){
 			   move_robot();
 			   tx--;
 			}
 		}else{
-			change_direction(int orig, int new); // 90 degrees left
+//			change_direction(int orig, int new); // 90 degrees left
 			while(tx < 0){
 			   move_robot();
 			   tx++;
@@ -351,20 +500,20 @@ int move_to(int s, int f, int h){
 			   tx--;
 			}
 		}else{
-			change_direction(int orig, int new); // 180 degrees
+//			change_direction(int orig, int new); // 180 degrees
 			while(tx < 0){
 			   move_robot();
 			   tx++;
 			}
 		}
 		if(ty > 0){
-			change_direction(int orig, int new); // 90 degrees left
+//			change_direction(int orig, int new); // 90 degrees left
 			while(ty > 0){
 			   move_robot();
 			   ty--;
 			}
 		}else{
-			change_direction(int orig, int new); // 90 degrees right
+//			change_direction(int orig, int new); // 90 degrees right
 			while(ty < 0){
 			   move_robot();
 			   ty++;
@@ -372,7 +521,7 @@ int move_to(int s, int f, int h){
 		}
 	}else if (heading == SOUTH){
 		if(ty > 0){
-			change_direction(int orig, int new); // 180 degrees
+//			change_direction(int orig, int new); // 180 degrees
 			while(ty > 0){
 			   move_robot();
 			   ty--;
@@ -384,20 +533,20 @@ int move_to(int s, int f, int h){
 			}
 		}
 		if (tx > 0){
-			change_direction(int orig, int new); // 90 degrees left
+//			change_direction(int orig, int new); // 90 degrees left
 			while(tx > 0){
 			   move_robot();
 			   tx--;
 			}
 		}else{
-			change_direction(int orig, int new); // 90 degrees right
+//			change_direction(int orig, int new); // 90 degrees right
 			while(tx < 0){
 			   move_robot();
 			   tx++;
 			}
 		}
 	}else if (heading == WEST){
-		change_direction(int orig, int new); // 180 degrees
+//		change_direction(int orig, int new); // 180 degrees
 		if (tx > 0){
 			while(tx > 0){
 			   move_robot();
@@ -410,294 +559,300 @@ int move_to(int s, int f, int h){
 			}
 		}
 		if(ty > 0){
-			change_direction(int orig, int new); // 90 degrees right
+//			change_direction(int orig, int new); // 90 degrees right
 			while(ty > 0){
 			   move_robot();
 			   ty--;
 			}
 		}else{
-			change_direction(int orig, int new); // 90 degrees left
+//			change_direction(int orig, int new); // 90 degrees left
 			while(ty < 0){
 			   move_robot();
 			   ty++;
 			}
 		}
 	}
-    */
+
     return heading;
 }
+*/
 
 /* This function takes a particle and returns an updated particle after moving
 
    To "move" a particle is to move it forward in the direction of the particle.
    We move these particles in the same way we would move the robot.
-   
+
    Upon reaching a boundary, the particle is turned 180 degrees around.
 
 */
-particle move(particle p){
+particle move(particle p) {
 
-         ///////////////////////////////////////////////////////////////////////
-         // TO DO:
-         //
-         // Move particle p forward one interesection in the direction it is
-         // facing.
-         // Similar to the robot's behaviour, if a particle reaches the end of
-         // the map, it turns in the opposite direction and returns to the
-         // previous intersection it was at.
-         //
-         ///////////////////////////////////////////////////////////////////////
-		if(p.theta == NORTH){
-			if(p.y != 4){
-				p.y = p.y + 1;
-			}else{
-			// prob almost 0
-			}
-		}else if(p.theta == EAST){
-			if(p.x != 2){
-				p.x = p.x + 1;
-			}else{
-			// prob almost 0
-			}
-		}else if(p.theta == SOUTH){
-			if(p.y != 0){
-				p.y = p.y - 1;
-			}else{
-			// prob almost 0
-			}
-		}else if(p.theta == WEST){
-			if(p.x != 0){
-				p.x = p.x + 1;
-			}else{
-			// prob almost 0
-			}
-		}
-		
-         return p;
+    ///////////////////////////////////////////////////////////////////////
+    // TO DO:
+    //
+    // Move particle p forward one intersection in the direction it is
+    // facing.
+    // Similar to the robot's behaviour, if a particle reaches the end of
+    // the map, it turns in the opposite direction and returns to the
+    // previous intersection it was at.
+    //
+    ///////////////////////////////////////////////////////////////////////
+    if(p.theta == NORTH) {
+        if(p.y != 4) {
+            p.y = p.y + 1;
+        } else {
+            // prob almost 0
+        }
+    } else if(p.theta == EAST) {
+        if(p.x != 2) {
+            p.x = p.x + 1;
+        } else {
+            // prob almost 0
+        }
+    } else if(p.theta == SOUTH) {
+        if(p.y != 0) {
+            p.y = p.y - 1;
+        } else {
+            // prob almost 0
+        }
+    } else if(p.theta == WEST) {
+        if(p.x != 0) {
+            p.x = p.x + 1;
+        } else {
+            // prob almost 0
+        }
+    }
+
+    return p;
 }
 
 /* This function returns data on interesection surroundings for particles.
 
    Based on the map data array, we want the colour of the square at the given x
    and y coordinates in direction dir which is one of NE, SE, SW, NW.
-   
+
    Take note that the heading given will change the percieved directions.
    For example, facing north, NE in terms of compass directions is northeast.
    Facing south however, NE in terms of compass directions is southwest.
-   
+
    Because the robot does not know it's own heading, the particles must reflect
    this by using sensing relative to heading.
 */
-int sense(intersection map[], int x, int y, int dir, int heading){
-
-    ////////////////////////////////////////////////////////////////////////////
-    // TO DO:
-    //
-    // Implement the function which checks the surroundings of the particle at
-    // (x, y) facing the direction given by heading.
-    //
-    // The data you need to determine the particle's surroundings is given by
-    // the map data array.
-    //
-    // The integer returned is the
-    // colour of the square in the direction of dir which is one of NE, SE, SW,
-    // or NW.
-    // Keep in mind that the direction is relative to the heading as mentioned
-    // in the function description.
-    //
-    ////////////////////////////////////////////////////////////////////////////
-
-
-    return -1; // you may need to remove this
-}
+//int senseParticle(intersection map[], int x, int y, int dir, int heading){
+//
+//    ////////////////////////////////////////////////////////////////////////////
+//    // TO DO:
+//    //
+//    // Implement the function which checks the surroundings of the particle at
+//    // (x, y) facing the direction given by heading.
+//    //
+//    // The data you need to determine the particle's surroundings is given by
+//    // the map data array.
+//    //
+//    // The integer returned is the
+//    // colour of the square in the direction of dir which is one of NE, SE, SW,
+//    // or NW.
+//    // Keep in mind that the direction is relative to the heading as mentioned
+//    // in the function description.
+//    //
+//    ////////////////////////////////////////////////////////////////////////////
+//
+//
+//    return -1; // you may need to remove this
+//}
 
 /* The main task which initializes data
    and executes the update loop for the particle filters
 */
-task main(){
+task main() {
 
-     /* variable declarations */
-     intersection map [GWIDTH *GHEIGHT]; /* holds map data */
-     
-     int guess[3]; /* holds x y and theta of the best guess at robot's position */
-     float robp = 0.0; /* holds the prob that the robot is at guess */
-		       /* note initializing to just '0' can cause the brick to freeze! */
-     intersection rsense; /* holds data about the robot's surroundings */
+    /* variable declarations */
+    intersection map [GWIDTH *GHEIGHT]; /* holds map data */
 
-     particle list[GWIDTH*GHEIGHT*4]; /* list of particles */
-     int psense[4]; /* holds data on a particle's surroundings */
+    int guess[3]; /* holds x y and theta of the best guess at robot's position */
+    float robp = 0.0; /* holds the prob that the robot is at guess */
+    /* note initializing to just '0' can cause the brick to freeze! */
+    intersection rsense; /* holds data about the robot's surroundings */
 
-     int i, j; /* variables for loop counters */
-     int hits, misses; /* keeps track of how many of a particle's
+    particle list[GWIDTH*GHEIGHT*4]; /* list of particles */
+    int psense[4]; /* holds data on a particle's surroundings */
+
+    int i, j; /* variables for loop counters */
+    int hits, misses; /* keeps track of how many of a particle's
                           surroundings match the robot's */
-     float maxprob, totalprob;
-     
-     byte fd, charat;         /* variables for file descriptors and characters */
-     string line;
-     int target, dest; /* records the target and destination coordinates for use
+    float maxprob, totalprob;
+
+    byte fd, charat;         /* variables for file descriptors and characters */
+    string line;
+    int target, dest; /* records the target and destination coordinates for use
                           after finding the robot's position */
-     
-     /* sensor initialization */
-     SetSensorColorFull(IN_1);
 
-     /* initialize the particle list, each coordinate has 4 particles, one for each direction */
-   for (i = 0; i < GWIDTH*GHEIGHT*4;i = i + 4){
-       list[i].x=(i/4)%GWIDTH;
-       list[i].y=i/(4*GWIDTH);
-       list[i].theta = NORTH;
-       list[i].prob = 1.0/(GWIDTH*GHEIGHT*4);
-       list[i+1].x=(i/4)%GWIDTH;
-       list[i+1].y=i/(4*GWIDTH);
-       list[i+1].theta = SOUTH;
-       list[i+1].prob = 1.0/(GWIDTH*GHEIGHT*4);
-       list[i+2].x=(i/4)%GWIDTH;
-       list[i+2].y=i/(4*GWIDTH);
-       list[i+2].theta = EAST;
-       list[i+2].prob = 1.0/(GWIDTH*GHEIGHT*4);
-       list[i+3].x=(i/4)%GWIDTH;
-       list[i+3].y=i/(4*GWIDTH);
-       list[i+3].theta = WEST;
-       list[i+3].prob = 1.0/(GWIDTH*GHEIGHT*4);
-   }
-   
-   /* Initialize the map and target from file
+    /* sensor initialization */
+    SetSensorColorFull(S1);
+    ColorSensorReadType csr;
+    csr.Port=S1;
+    /* initialize the particle list, each coordinate has 4 particles, one for each direction */
+    for (i = 0; i < GWIDTH*GHEIGHT*4; i = i + 4) {
+        list[i].x=(i/4)%GWIDTH;
+        list[i].y=i/(4*GWIDTH);
+        list[i].theta = NORTH;
+        list[i].prob = 1.0/(GWIDTH*GHEIGHT*4);
+        list[i+1].x=(i/4)%GWIDTH;
+        list[i+1].y=i/(4*GWIDTH);
+        list[i+1].theta = SOUTH;
+        list[i+1].prob = 1.0/(GWIDTH*GHEIGHT*4);
+        list[i+2].x=(i/4)%GWIDTH;
+        list[i+2].y=i/(4*GWIDTH);
+        list[i+2].theta = EAST;
+        list[i+2].prob = 1.0/(GWIDTH*GHEIGHT*4);
+        list[i+3].x=(i/4)%GWIDTH;
+        list[i+3].y=i/(4*GWIDTH);
+        list[i+3].theta = WEST;
+        list[i+3].prob = 1.0/(GWIDTH*GHEIGHT*4);
+    }
 
-      The format of the file:
-          - one line per intersection containing 4 integers seperated by spaces
-            these integers represent NE SE SW NW respectively
-          - the order of the intersections is rows top to bottom then columns
-            left to right
-          - after all the intersection data there are two lines with 2 integers
-            each. this describes the target and destination that the robot must
-            move to after finding its position
-            
-      Colour values are based on NXC colour sensor constants
-      
-      Array format:
-            - indices are obtained using the formula i = GHEIGHT*x + y
-            - each index contains an interesction element that holds information
-              about it's surroundings
-      */
-   fd = fopen(FILENAME, "r");
-   /* read as many lines as there are squares on the grid */
-   for (i=0; i < GWIDTH*GHEIGHT; i++){
-       fgets(line, READSIZE, fd);
-       /* parse each line into the coresponding directions and store them in
-          the map data array */
-       for (j = 0; j < 7; j = j + 2){
-           charat = StrIndex(line, j);
-           switch (j){
-                  case 0:
-                       map[i].NE = ASCII_TO_INT(charat);
-                       break;
-                  case 2:
-                       map[i].SE = ASCII_TO_INT(charat);
-                       break;
-                  case 4:
-                       map[i].SW = ASCII_TO_INT(charat);
-                       break;
-                  case 6:
-                       map[i].NW = ASCII_TO_INT(charat);
-                       break;
-           }
-       }
-   }
-   /* read information about the target which should be following the map data */
-   fgets(line, READSIZE, fd);
-   charat = StrIndex(line,0);
-   target = ASCII_TO_INT(charat);
-   target = target*GHEIGHT; // add x coordinate calculation
-   charat = StrIndex(line,2);
-   target = target + ASCII_TO_INT(charat); // add y coordinate
-        
-   /* read information about the destination which sould be following the target data */
-   fgets(line, READSIZE, fd);
-   charat = StrIndex(line,0);
-   dest = ASCII_TO_INT(charat);
-   dest = dest*GHEIGHT; // add x coordinate calculation
-   charat = StrIndex(line,2);
-   dest = dest + ASCII_TO_INT(charat); // add y coordinate
+    /* Initialize the map and target from file
 
-   fclose(fd); /* file reading finished */
+       The format of the file:
+           - one line per intersection containing 4 integers seperated by spaces
+             these integers represent NE SE SW NW respectively
+           - the order of the intersections is rows top to bottom then columns
+             left to right
+           - after all the intersection data there are two lines with 2 integers
+             each. this describes the target and destination that the robot must
+             move to after finding its position
 
-   /* main execution loop for particle filter
+       Colour values are based on NXC colour sensor constants
 
-      How particle filters work:
+       Array format:
+             - indices are obtained using the formula i = GHEIGHT*x + y
+             - each index contains an interesction element that holds information
+               about it's surroundings
+       */
+    fd = fopen(FILENAME, "r");
+    /* read as many lines as there are squares on the grid */
+    for (i=0; i < GWIDTH*GHEIGHT; i++) {
+        fgets(line, READSIZE, fd);
+        /* parse each line into the coresponding directions and store them in
+           the map data array */
+        for (j = 0; j < 7; j = j + 2) {
+            charat = StrIndex(line, j);
+            switch (j) {
+            case 0:
+                map[i].NE = ASCII_TO_INT(charat);
+                break;
+            case 2:
+                map[i].SE = ASCII_TO_INT(charat);
+                break;
+            case 4:
+                map[i].SW = ASCII_TO_INT(charat);
+                break;
+            case 6:
+                map[i].NW = ASCII_TO_INT(charat);
+                break;
+            }
+        }
+    }
+    /* read information about the target which should be following the map data */
+    fgets(line, READSIZE, fd);
+    charat = StrIndex(line,0);
+    target = ASCII_TO_INT(charat);
+    target = target*GHEIGHT; // add x coordinate calculation
+    charat = StrIndex(line,2);
+    target = target + ASCII_TO_INT(charat); // add y coordinate
 
-      Normally we would have a list of particles initilalized with random
-      coordinates and headings.
+    /* read information about the destination which sould be following the target data */
+    fgets(line, READSIZE, fd);
+    charat = StrIndex(line,0);
+    dest = ASCII_TO_INT(charat);
+    dest = dest*GHEIGHT; // add x coordinate calculation
+    charat = StrIndex(line,2);
+    dest = dest + ASCII_TO_INT(charat); // add y coordinate
 
-      At each iteration of the loop, we move the robot and the particles.
-      Surroundings for both are examined and compared.
-      
-      Particles which have surroundings that seem close to the robots are given
-      larger weights compared to those that don't.
-      
-      We then choose from the particles in a way that the particles with higher
-      weights are likley to remain, while particles with smaller weights are
-      eliminated. This is called resampling.
-      
-      After several iterations, we would have a group of particles which is
-      very likley to represent the robot's actual position.
-      
-      How this implementation works:
-      
-      We have simplified the large possibility of coordinates to a grid.
-      
-      === Particle List ===
-      For each intersection on the grid map, we have four particles.
-      One for each of north, east, south, and west, which the robot could be
-      facing since it will move vertically and horizontally.
-      These are all the possible starting positions and headings the robot could
-      have.
-      
-      === Updating weights ===
-      Each iteration we reasign the particle weights.
-      We move the robot, and also the particles.
-      The surroundings, being the four coloured squares around the intersection
-      are checked. The robot's and particles surroundings are compared and the
-      weights are changed based on whether they match or not.
-      
-      === Resampling ==
-      Take note that we do NOT do resampling in this implementation.
-      Instead we have a probability threshold that a particle must pass to be
-      accepted as the actual position of the robot.
-      
-   */
-   
-   ////////////////////////////////////////////////////////////////////////////
-   // TO DO:
-   //
-   // Write the main particle filter execution loop. It will loop until a
-   // particle weight reaches the threshold
-   //
-   // At each iteration the following steps take place:
-   //    - robot checks its surroundings
-   //    - each particle checks its surroundings and compares them with the
-   //      robot's
-   //    - adjust particle weights based on the comparison
-   //    - normalize particle weights
-   //    - find the best guess of the robot's position
-   //    - move the robot and the particles forward to the next intersection
-   //
-   /////////////////////////////////////////////////////////////////////////////
-   while (robp < THRESHOLD){ /* run the update loop until an acceptable
-                               probability is obtained */
-      /* implement me */
-   }
-   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
-   
-   /* When we are fairly confident about the robot's position, we can move on
-      to the task given.
-      
-      Once the robot has found where it is, it must head to the target given in
-      the initialization file.
-      After picking up the confidential item at the target point it must move to
-      the delivery point given by the destination from the initialization file.
-      
-   */
-   guess[2] = move_to(guess[0]*GHEIGHT + guess[1], target, guess[2]);
-   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
-   move_to(target, dest,guess[2]);
-   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
+    fclose(fd); /* file reading finished */
+
+    /* main execution loop for particle filter
+
+       How particle filters work:
+
+       Normally we would have a list of particles initilalized with random
+       coordinates and headings.
+
+       At each iteration of the loop, we move the robot and the particles.
+       Surroundings for both are examined and compared.
+
+       Particles which have surroundings that seem close to the robots are given
+       larger weights compared to those that don't.
+
+       We then choose from the particles in a way that the particles with higher
+       weights are likley to remain, while particles with smaller weights are
+       eliminated. This is called resampling.
+
+       After several iterations, we would have a group of particles which is
+       very likley to represent the robot's actual position.
+
+       How this implementation works:
+
+       We have simplified the large possibility of coordinates to a grid.
+
+       === Particle List ===
+       For each intersection on the grid map, we have four particles.
+       One for each of north, east, south, and west, which the robot could be
+       facing since it will move vertically and horizontally.
+       These are all the possible starting positions and headings the robot could
+       have.
+
+       === Updating weights ===
+       Each iteration we reasign the particle weights.
+       We move the robot, and also the particles.
+       The surroundings, being the four coloured squares around the intersection
+       are checked. The robot's and particles surroundings are compared and the
+       weights are changed based on whether they match or not.
+
+       === Resampling ==
+       Take note that we do NOT do resampling in this implementation.
+       Instead we have a probability threshold that a particle must pass to be
+       accepted as the actual position of the robot.
+
+    */
+
+    ////////////////////////////////////////////////////////////////////////////
+    // TO DO:
+    //
+    // Write the main particle filter execution loop. It will loop until a
+    // particle weight reaches the threshold
+    //
+    // At each iteration the following steps take place:
+    //    - robot checks its surroundings
+    //    - each particle checks its surroundings and compares them with the
+    //      robot's
+    //    - adjust particle weights based on the comparison
+    //    - normalize particle weights
+    //    - find the best guess of the robot's position
+    //    - move the robot and the particles forward to the next intersection
+    //
+    /////////////////////////////////////////////////////////////////////////////
+    move_robot(csr);
+    ClearScreen();
+    scan_surroundings(csr);
+
+//   while (robp < THRESHOLD){ /* run the update loop until an acceptable
+//                               probability is obtained */
+//      /* implement me */
+//   }
+//   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
+//
+//   /* When we are fairly confident about the robot's position, we can move on
+//      to the task given.
+//
+//      Once the robot has found where it is, it must head to the target given in
+//      the initialization file.
+//      After picking up the confidential item at the target point it must move to
+//      the delivery point given by the destination from the initialization file.
+//
+//   */
+//   guess[2] = move_to(guess[0]*GHEIGHT + guess[1], target, guess[2]);
+//   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
+//   move_to(target, dest,guess[2]);
+//   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
 }

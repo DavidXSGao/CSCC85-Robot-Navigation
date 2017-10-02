@@ -256,12 +256,28 @@ sub change_direction(int orig, int new){
                    OnFwd(OUT_C, SPEED);
                 }
                 break;
-           case 2:
-				
-		   
-	         case -2:
+           case 2:	
+		   case -2:
                 // 180 degree turn
                 /* code solution here */
+                until (get_color() != curr_color){       // color changes
+                   OnRev(OUT_A, ROTATIONA);
+                   OnFwd(OUT_C, SPEED);
+                }
+				int second_color = get_color();
+				until (get_color() != second_color){       // color changes twice
+                   OnRev(OUT_A, ROTATIONA);
+                   OnFwd(OUT_C, SPEED);
+                }
+				int third_color = get_color();
+				until (get_color() != second_color){       // color changes three times
+                   OnRev(OUT_A, ROTATIONA);
+                   OnFwd(OUT_C, SPEED);
+                }int forth_color = get_color();
+				until (get_color() != second_color){       // color changes four times
+                   OnRev(OUT_A, ROTATIONA);
+                   OnFwd(OUT_C, SPEED);
+                }
                 break;
     }
 }
@@ -302,15 +318,112 @@ int move_to(int s, int f, int h){
     ////////////////////////////////////////////////////////////////////////////
     /*
     4 if statments depending on heading
-    while(tx != 0){
-       move_robot();
-    }
-    change_direction(int orig, int new);
-    while(ty != 0){
-       move_robot();
-    }
+	if (heading == 100){
+		if(ty > 0){
+			while(ty > 0){
+			   move_robot();
+			   ty--;
+			}
+		}else{
+			change_direction(int orig, int new); // 180 degrees
+			while(ty < 0){
+			   move_robot();
+			   ty++;
+			}
+		}
+		if (tx > 0){
+			change_direction(int orig, int new); // 90 degrees right
+			while(tx > 0){
+			   move_robot();
+			   tx--;
+			}
+		}else{
+			change_direction(int orig, int new); // 90 degrees left
+			while(tx < 0){
+			   move_robot();
+			   tx++;
+			}
+		}
+	}else if (heading == 101){
+		if (tx > 0){
+			while(tx > 0){
+			   move_robot();
+			   tx--;
+			}
+		}else{
+			change_direction(int orig, int new); // 180 degrees
+			while(tx < 0){
+			   move_robot();
+			   tx++;
+			}
+		}
+		if(ty > 0){
+			change_direction(int orig, int new); // 90 degrees left
+			while(ty > 0){
+			   move_robot();
+			   ty--;
+			}
+		}else{
+			change_direction(int orig, int new); // 90 degrees right
+			while(ty < 0){
+			   move_robot();
+			   ty++;
+			}
+		}
+	}else if (heading == 102){
+		if(ty > 0){
+			change_direction(int orig, int new); // 180 degrees
+			while(ty > 0){
+			   move_robot();
+			   ty--;
+			}
+		}else{
+			while(ty < 0){
+			   move_robot();
+			   ty++;
+			}
+		}
+		if (tx > 0){
+			change_direction(int orig, int new); // 90 degrees left
+			while(tx > 0){
+			   move_robot();
+			   tx--;
+			}
+		}else{
+			change_direction(int orig, int new); // 90 degrees right
+			while(tx < 0){
+			   move_robot();
+			   tx++;
+			}
+		}
+	}else if (heading == 103){
+		change_direction(int orig, int new); // 180 degrees
+		if (tx > 0){
+			while(tx > 0){
+			   move_robot();
+			   tx--;
+			}
+		}else{
+			while(tx < 0){
+			   move_robot();
+			   tx++;
+			}
+		}
+		if(ty > 0){
+			change_direction(int orig, int new); // 90 degrees right
+			while(ty > 0){
+			   move_robot();
+			   ty--;
+			}
+		}else{
+			change_direction(int orig, int new); // 90 degrees left
+			while(ty < 0){
+			   move_robot();
+			   ty++;
+			}
+		}
+	}
     */
-
     return heading;
 }
 
@@ -334,7 +447,32 @@ particle move(particle p){
          // previous intersection it was at.
          //
          ///////////////////////////////////////////////////////////////////////
-
+		if(p.theta == 100){
+			if(p.y != 4){
+				p.y = p.y + 1;
+			}else{
+			// prob almost 0
+			}
+		}else if(p.theta == 101){
+			if(p.x != 2){
+				p.x = p.x + 1;
+			}else{
+			// prob almost 0
+			}
+		}else if(p.theta == 102){
+			if(p.y != 0){
+				p.y = p.y - 1;
+			}else{
+			// prob almost 0
+			}
+		}else if(p.theta == 103){
+			if(p.x != 0){
+				p.x = p.x + 1;
+			}else{
+			// prob almost 0
+			}
+		}
+		
          return p;
 }
 

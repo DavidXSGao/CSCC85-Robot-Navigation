@@ -71,7 +71,7 @@
 #define GREENAVGR 74
 #define GREENAVGG 124
 #define GREENAVGB 65
-#define WHITEAVGR 2SPEED
+#define WHITEAVGR 230
 #define WHITEAVGG 210
 #define WHITEAVGB 220
  
@@ -318,7 +318,7 @@ int move_to(int s, int f, int h){
     ////////////////////////////////////////////////////////////////////////////
     /*
     4 if statments depending on heading
-	if (heading == 100){
+	if (heading == NORTH){
 		if(ty > 0){
 			while(ty > 0){
 			   move_robot();
@@ -344,7 +344,7 @@ int move_to(int s, int f, int h){
 			   tx++;
 			}
 		}
-	}else if (heading == 101){
+	}else if (heading == EAST){
 		if (tx > 0){
 			while(tx > 0){
 			   move_robot();
@@ -370,7 +370,7 @@ int move_to(int s, int f, int h){
 			   ty++;
 			}
 		}
-	}else if (heading == 102){
+	}else if (heading == SOUTH){
 		if(ty > 0){
 			change_direction(int orig, int new); // 180 degrees
 			while(ty > 0){
@@ -396,7 +396,7 @@ int move_to(int s, int f, int h){
 			   tx++;
 			}
 		}
-	}else if (heading == 103){
+	}else if (heading == WEST){
 		change_direction(int orig, int new); // 180 degrees
 		if (tx > 0){
 			while(tx > 0){
@@ -447,25 +447,25 @@ particle move(particle p){
          // previous intersection it was at.
          //
          ///////////////////////////////////////////////////////////////////////
-		if(p.theta == 100){
+		if(p.theta == NORTH){
 			if(p.y != 4){
 				p.y = p.y + 1;
 			}else{
 			// prob almost 0
 			}
-		}else if(p.theta == 101){
+		}else if(p.theta == EAST){
 			if(p.x != 2){
 				p.x = p.x + 1;
 			}else{
 			// prob almost 0
 			}
-		}else if(p.theta == 102){
+		}else if(p.theta == SOUTH){
 			if(p.y != 0){
 				p.y = p.y - 1;
 			}else{
 			// prob almost 0
 			}
-		}else if(p.theta == 103){
+		}else if(p.theta == WEST){
 			if(p.x != 0){
 				p.x = p.x + 1;
 			}else{
@@ -701,4 +701,3 @@ task main(){
    move_to(target, dest,guess[2]);
    PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
 }
-

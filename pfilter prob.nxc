@@ -198,7 +198,6 @@ sub move_robot(ColorSensorReadType &csr) {
     while(true) {
 
         SysColorSensorRead(csr);
-//        ClearScreen();
 
         current_color = get_color(csr);
 
@@ -213,8 +212,6 @@ sub move_robot(ColorSensorReadType &csr) {
             current_color = prev_color;
         }
 
-//        NumOut(0, LCD_LINE5, prev_color);
-//        NumOut(0, LCD_LINE6, current_color);
 
         if (current_color == -1){
         Off(OUT_AC);
@@ -275,7 +272,6 @@ intersection scan_surroundings(ColorSensorReadType &csr) {
         OnRev(OUT_A, ROTATIONA);
         OnFwd(OUT_C, SPEED);
         SysColorSensorRead(csr);
-        ClearScreen();
         current_color = get_color(csr);
         if (current_color != -1 && prev_color == 0){
             prev_color = current_color;
@@ -283,15 +279,9 @@ intersection scan_surroundings(ColorSensorReadType &csr) {
         if (current_color == -1 && prev_color != 0){
             current_color = prev_color;
         }
-        NumOut(0,LCD_LINE1,csr.NormalizedArray[0]);
-        NumOut(0,LCD_LINE2,csr.NormalizedArray[1]);
-        NumOut(0,LCD_LINE3,csr.NormalizedArray[2]);
-
-
 
         if (current_color == 1) {
             wait = false;
-//            continue;
         } else if (wait == false){
             if (rsense.NE == 0 && rsense.NW == 0 && rsense.SE == 0 &&
                     rsense.SW == 0) {
@@ -327,15 +317,16 @@ intersection scan_surroundings(ColorSensorReadType &csr) {
 
     SysColorSensorRead(csr);
     current_color = get_color(csr);
-    NumOut(0, LCD_LINE1, prev_color);
-    NumOut(0, LCD_LINE2, current_color);
-    until (current_color != 1) {       // back to original position
+
+
+    while (current_color != 1) {       // back to original position
         OnRev(OUT_A, ROTATIONA);
         OnFwd(OUT_C, SPEED);
         SysColorSensorRead(csr);
         current_color = get_color(csr);
+
     }
-    Wait(10000);
+    Off(OUT_AC);
     return rsense;
 }
 

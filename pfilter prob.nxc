@@ -541,74 +541,75 @@ int move_to(int s, int f, int h, ColorSensorReadType &csr){
         move to changes direction once, calls move robot, call move to again
     */
 
-    // 4 if statments depending on heading
-	if (heading == NORTH){
-		if (tx > 0){
-			change_direction(-1, csr); //right 90 degrees
-			move_robot(csr);
-			heading = EAST;
-		}else if (tx < 0){
-			change_direction(1, csr); //left 90 degrees
-			move_robot(csr);
-			heading = WEST;
-		}else if (ty > 0){
-			move_robot(csr);
-		}else if (ty < 0){
-			change_direction(1, csr); //left 90 degrees
-			change_direction(1, csr); //left 90 degrees
-			move_robot(csr);
-			heading = SOUTH;
-		}
-	}else if (heading == EAST){
-		if (tx > 0){
-			move_robot(csr);
-		}else if (tx < 0){
-			change_direction(1, csr); //left 90 degrees
-			change_direction(1, csr); //left 90 degrees
-			move_robot(csr);
-			heading = WEST;
-		}else if (ty > 0){
-			change_direction(1, csr); //left 90 degrees
-			move_robot(csr);
-			heading = NORTH;
-		}else if (ty < 0){
-			change_direction(-1, csr); //right 90 degrees
-			move_robot(csr);
-			heading = SOUTH;
-		}
-	}else if (heading == SOUTH){
-		if (tx > 0){
-			change_direction(1, csr); //left 90 degrees
-			move_robot(csr);
-			heading = EAST;
-		}else if (tx < 0){
-			change_direction(-1, csr); //right 90 degrees
-			move_robot(csr);
-			heading = WEST;
-		}else if (ty > 0){
-			change_direction(1, csr); //left 90 degrees
-			change_direction(1, csr); //left 90 degrees
-			move_robot(csr);
-			heading = NORTH;
-		}else if (ty < 0){
-			move_robot(csr);
-		}
-	}else if (heading == WEST){
-		if (tx > 0){
-			change_direction(-1, csr); //right 90 degrees
-			change_direction(-1, csr); //right 90 degrees
-			move_robot(csr);
-			heading = EAST;
-		}else if (tx < 0){
-			move_robot(csr);
-		}else if (ty > 0){
-			change_direction(-1, csr); //right 90 degrees
-			move_robot(csr);
-			heading = NORTH;
-		}else if (ty < 0){
-			change_direction(1, csr); //left 90 degrees
-			move_robot(csr);
-			heading = SOUTH;
+	while(tx > 0 || ty > 0){
+		if (heading == NORTH){
+			if (tx > 0){
+				change_direction(-1, csr); //right 90 degrees
+				move_robot(csr);
+				heading = EAST;
+			}else if (tx < 0){
+				change_direction(1, csr); //left 90 degrees
+				move_robot(csr);
+				heading = WEST;
+			}else if (ty > 0){
+				move_robot(csr);
+			}else if (ty < 0){
+				change_direction(1, csr); //left 90 degrees
+				change_direction(1, csr); //left 90 degrees
+				move_robot(csr);
+				heading = SOUTH;
+			}
+		}else if (heading == EAST){
+			if (tx > 0){
+				move_robot(csr);
+			}else if (tx < 0){
+				change_direction(1, csr); //left 90 degrees
+				change_direction(1, csr); //left 90 degrees
+				move_robot(csr);
+				heading = WEST;
+			}else if (ty > 0){
+				change_direction(1, csr); //left 90 degrees
+				move_robot(csr);
+				heading = NORTH;
+			}else if (ty < 0){
+				change_direction(-1, csr); //right 90 degrees
+				move_robot(csr);
+				heading = SOUTH;
+			}
+		}else if (heading == SOUTH){
+			if (tx > 0){
+				change_direction(1, csr); //left 90 degrees
+				move_robot(csr);
+				heading = EAST;
+			}else if (tx < 0){
+				change_direction(-1, csr); //right 90 degrees
+				move_robot(csr);
+				heading = WEST;
+			}else if (ty > 0){
+				change_direction(1, csr); //left 90 degrees
+				change_direction(1, csr); //left 90 degrees
+				move_robot(csr);
+				heading = NORTH;
+			}else if (ty < 0){
+				move_robot(csr);
+			}
+		}else if (heading == WEST){
+			if (tx > 0){
+				change_direction(-1, csr); //right 90 degrees
+				change_direction(-1, csr); //right 90 degrees
+				move_robot(csr);
+				heading = EAST;
+			}else if (tx < 0){
+				move_robot(csr);
+			}else if (ty > 0){
+				change_direction(-1, csr); //right 90 degrees
+				move_robot(csr);
+				heading = NORTH;
+			}else if (ty < 0){
+				change_direction(1, csr); //left 90 degrees
+				move_robot(csr);
+				heading = SOUTH;
+			}
 		}
 	}
     return heading;
@@ -1499,30 +1500,51 @@ task main() {
     //    - move the robot and the particles forward to the next intersection
     //
     /////////////////////////////////////////////////////////////////////////////
-    move_robot(csr);
+    /*move_robot(csr);
     ClearScreen();
     scan_surroundings(csr);
     move_to(0, 2, NORTH, csr);
     scan_surroundings(csr);
     move_to(1, 2, EAST, csr);
-//   while (robp < THRESHOLD){ /* run the update loop until an acceptable
-//                               probability is obtained */
-//      /* implement me */
-//   }
-//   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
-//
-//   /* When we are fairly confident about the robot's position, we can move on
-//      to the task given.
-//
-//      Once the robot has found where it is, it must head to the target given in
-//      the initialization file.
-//      After picking up the confidential item at the target point it must move to
-//      the delivery point given by the destination from the initialization file.
-//
-//   */
-//   guess[2] = move_to(guess[0]*GHEIGHT + guess[1], target, guess[2]);
-//   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
-//   move_to(target, dest,guess[2]);
-//   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
+	*/
+	while (robp < THRESHOLD){ /* run the update loop until an acceptable
+								probability is obtained */
+		/* implement me */
+		move_robot(csr);
+		scan_surroundings(csr);
+	}
+	PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
+
+	/* When we are fairly confident about the robot's position, we can move on
+		to the task given.
+
+		Once the robot has found where it is, it must head to the target given in
+		the initialization file.
+		After picking up the confidential item at the target point it must move to
+		the delivery point given by the destination from the initialization file.
+
+	*/
+	// guess[0] = 2; guess[1] = 0; guess[2] = NORTH; // for testing
+	guess[2] = move_to(guess[0]*GHEIGHT + guess[1], target, guess[2], csr);
+	PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
+	TextOut(0,LCD_LINE1,"--P-R-A-I-S-E--T-H-E---");
+	TextOut(0,LCD_LINE2,"--\----__-----__----/--");
+	TextOut(0,LCD_LINE3,"---\---|._____.|---/---");
+	TextOut(0,LCD_LINE4,"----\--|   |   |--/----");
+	TextOut(0,LCD_LINE5,"-----\-|   |   |-/-----");
+	TextOut(0,LCD_LINE6,"------\|_..|.._|/------");
+	TextOut(0,LCD_LINE7,"---------S-U-N---------");
+	Wait(5000);
+	ClearScreen();
+	move_to(target, dest,guess[2], csr);
+	PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
+	TextOut(0,LCD_LINE1,"--P-R-A-I-S-E--T-H-E---");
+	TextOut(0,LCD_LINE2,"--\----__-----__----/--");
+	TextOut(0,LCD_LINE3,"---\---|._____.|---/---");
+	TextOut(0,LCD_LINE4,"----\--|   |   |--/----");
+	TextOut(0,LCD_LINE5,"-----\-|   |   |-/-----");
+	TextOut(0,LCD_LINE6,"------\|_..|.._|/------");
+	TextOut(0,LCD_LINE7,"---------S-U-N---------");
+	Wait(5000);
 }
 

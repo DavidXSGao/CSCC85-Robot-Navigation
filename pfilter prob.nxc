@@ -54,7 +54,7 @@
 #define MISMATCH
 
 #define SPEED 30
-#define ROTATIONA 30
+#define ROTATIONA 40
 
 #define BLACKAVGR 40
 #define BLACKAVGG 45
@@ -128,12 +128,12 @@ int get_color(ColorSensorReadType &csr) {
     black&=csr.NormalizedArray[2] >= BLACKAVGB / 1.8;
 
     // check if input color is yellow
-    yellow&=csr.NormalizedArray[0] <= YELLOWAVGR * 1.1;
-    yellow&=csr.NormalizedArray[0] >= YELLOWAVGR / 1.1;
-    yellow&=csr.NormalizedArray[1] <= YELLOWAVGG * 1.1;
-    yellow&=csr.NormalizedArray[1] >= YELLOWAVGG / 1.1;
-    yellow&=csr.NormalizedArray[2] <= YELLOWAVGB * 1.1;
-    yellow&=csr.NormalizedArray[2] >= YELLOWAVGB / 1.1;
+    yellow&=csr.NormalizedArray[0] <= YELLOWAVGR * 1.3;
+    yellow&=csr.NormalizedArray[0] >= YELLOWAVGR / 1.3;
+    yellow&=csr.NormalizedArray[1] <= YELLOWAVGG * 1.3;
+    yellow&=csr.NormalizedArray[1] >= YELLOWAVGG / 1.3;
+    yellow&=csr.NormalizedArray[2] <= YELLOWAVGB * 1.3;
+    yellow&=csr.NormalizedArray[2] >= YELLOWAVGB / 1.3;
     // check if input color is red
     red&=csr.NormalizedArray[0] <= REDAVGR * 1.3;
     red&=csr.NormalizedArray[0] >= REDAVGR / 1.3;
@@ -214,9 +214,9 @@ sub move_robot(ColorSensorReadType &csr) {
         }
 
 
-        if (current_color == -1){
+/*        if (current_color == -1){
         Off(OUT_AC);
-        Wait(1000);}
+        Wait(1000);}*/
         if(current_color == 1) {
             if (red) { // move from red to yellow
                 OnRev(OUT_AC, SPEED); // move backwards with an output power of SPEED
@@ -235,10 +235,32 @@ sub move_robot(ColorSensorReadType &csr) {
             red = false;
             break;
 
-        } else { //went off black, rotate back to black
-//		    OnRev(OUT_A, ROTATIONA);
-//            OnFwd(OUT_C, SPEED);
-//            Off(OUT_AC);
+        } else if (current_color == 2 || current_color == 3 || current_color == 4 || current_color == 6){ //went off black, rotate back to black
+           until (current_color == 1) {
+               OnFwd(OUT_A, ROTATIONA);
+               OnRev(OUT_C, SPEED);
+               Wait(1000);
+               SysColorSensorRead(csr);
+               current_color = get_color(csr);
+               if (current_color == 1){
+                  break;
+               }
+               OnRev(OUT_A, ROTATIONA);
+               OnFwd(OUT_C, SPEED);
+               Wait(2000);
+               SysColorSensorRead(csr);
+               current_color = get_color(csr);
+               if (current_color == 1){
+                  break;
+               }
+               OnFwd(OUT_A, ROTATIONA);
+               OnRev(OUT_C, SPEED);
+               Wait(800);
+               OnRev(OUT_AC, SPEED);
+               Wait(200);
+               SysColorSensorRead(csr);
+               current_color = get_color(csr);
+           }
         }
         if (current_color != -1) {
             prev_color = current_color;
@@ -350,7 +372,7 @@ sub change_direction(int c, ColorSensorReadType &csr){
     int curr_color = dest_color;
 //    int change = new - orig;
     int second_color;
-    
+
 
 // selects the appropriate turn based on the headings given
 
@@ -495,10 +517,10 @@ int move_to(int s, int f, int h, ColorSensorReadType &csr){
     int sx, sy, fx, fy, tx, ty;
     int heading;
     // extract coordinates from given information
-    sx = s/GHEIGHT;
-    sy = s%GHEIGHT;
-    fx = f/GHEIGHT;
-    fy = f%GHEIGHT;
+    sx = s%GHEIGHT;
+    sy = s/GHEIGHT;
+    fx = f%GHEIGHT;
+    fy = f/GHEIGHT;
 
 /* calculate how far to go in manhatten distances */
 
@@ -514,133 +536,81 @@ int move_to(int s, int f, int h, ColorSensorReadType &csr){
     // makes turns.
     //
     ////////////////////////////////////////////////////////////////////////////
-    
+
     /*
         move to changes direction once, calls move robot, call move to again
     */
 
     // 4 if statments depending on heading
 	if (heading == NORTH){
-	    if (tx > 0){
-   			change_direction(-1,csr); // 90 degrees right
-    			while(tx > 0){
-    			   move_robot(csr);
-    			   tx--;
-    			}
-    			if(ty > 0){
-    			   change_direction(1,csr); // 90 degrees left
-                while(ty > 0){
-                   move_robot(csr);
-                   ty--;
-                }
-            }else{
-    			   change_direction(-1,csr); // 90 degrees right
-                while(ty < 0){
-                   move_robot(csr);
-                   ty++;
-                }
-            }
-    		}else{
-   			change_direction(1,csr); // 90 degrees left
-    			while(tx < 0){
-    			   move_robot(csr);
-    			   tx++;
-    			}
-    			if(ty > 0){
-    			   change_direction(-1,csr); // 90 degrees right
-                while(ty > 0){
-                   move_robot(csr);
-                   ty--;
-                }
-            }else{
-       			change_direction(1,csr); // 90 degrees right
-
-                while(ty < 0){
-                   move_robot(csr);
-                   ty++;
-                }
-            }
-    		}
+		if (tx > 0){
+			change_direction(-1, csr); //right 90 degrees
+			move_robot(csr);
+			heading = EAST;
+		}else if (tx < 0){
+			change_direction(1, csr); //left 90 degrees
+			move_robot(csr);
+			heading = WEST;
+		}else if (ty > 0){
+			move_robot(csr);
+		}else if (ty < 0){
+			change_direction(1, csr); //left 90 degrees
+			change_direction(1, csr); //left 90 degrees
+			move_robot(csr);
+			heading = SOUTH;
+		}
 	}else if (heading == EAST){
 		if (tx > 0){
-			while(tx > 0){
-			   move_robot(csr);
-			   tx--;
-			}
-		}else{
-//			change_direction(int orig, int new); // 180 degrees
-			while(tx < 0){
-			   move_robot(csr);
-			   tx++;
-			}
-		}
-		if(ty > 0){
-//			change_direction(int orig, int new); // 90 degrees left
-			while(ty > 0){
-			   move_robot(csr);
-			   ty--;
-			}
-		}else{
-//			change_direction(int orig, int new); // 90 degrees right
-			while(ty < 0){
-			   move_robot(csr);
-			   ty++;
-			}
+			move_robot(csr);
+		}else if (tx < 0){
+			change_direction(1, csr); //left 90 degrees
+			change_direction(1, csr); //left 90 degrees
+			move_robot(csr);
+			heading = WEST;
+		}else if (ty > 0){
+			change_direction(1, csr); //left 90 degrees
+			move_robot(csr);
+			heading = NORTH;
+		}else if (ty < 0){
+			change_direction(-1, csr); //right 90 degrees
+			move_robot(csr);
+			heading = SOUTH;
 		}
 	}else if (heading == SOUTH){
-		if(ty > 0){
-//			change_direction(int orig, int new); // 180 degrees
-			while(ty > 0){
-			   move_robot(csr);
-			   ty--;
-			}
-		}else{
-			while(ty < 0){
-			   move_robot(csr);
-			   ty++;
-			}
-		}
 		if (tx > 0){
-//			change_direction(int orig, int new); // 90 degrees left
-			while(tx > 0){
-			   move_robot(csr);
-			   tx--;
-			}
-		}else{
-//			change_direction(int orig, int new); // 90 degrees right
-			while(tx < 0){
-			   move_robot(csr);
-			   tx++;
-			}
+			change_direction(1, csr); //left 90 degrees
+			move_robot(csr);
+			heading = EAST;
+		}else if (tx < 0){
+			change_direction(-1, csr); //right 90 degrees
+			move_robot(csr);
+			heading = WEST;
+		}else if (ty > 0){
+			change_direction(1, csr); //left 90 degrees
+			change_direction(1, csr); //left 90 degrees
+			move_robot(csr);
+			heading = NORTH;
+		}else if (ty < 0){
+			move_robot(csr);
 		}
 	}else if (heading == WEST){
-//		change_direction(int orig, int new); // 180 degrees
 		if (tx > 0){
-			while(tx > 0){
-			   move_robot(csr);
-			   tx--;
-			}
-		}else{
-			while(tx < 0){
-			   move_robot(csr);
-			   tx++;
-			}
-		}
-		if(ty > 0){
-//			change_direction(int orig, int new); // 90 degrees right
-			while(ty > 0){
-			   move_robot(csr);
-			   ty--;
-			}
-		}else{
-//			change_direction(int orig, int new); // 90 degrees left
-			while(ty < 0){
-			   move_robot(csr);
-			   ty++;
-			}
+			change_direction(-1, csr); //right 90 degrees
+			change_direction(-1, csr); //right 90 degrees
+			move_robot(csr);
+			heading = EAST;
+		}else if (tx < 0){
+			move_robot(csr);
+		}else if (ty > 0){
+			change_direction(-1, csr); //right 90 degrees
+			move_robot(csr);
+			heading = NORTH;
+		}else if (ty < 0){
+			change_direction(1, csr); //left 90 degrees
+			move_robot(csr);
+			heading = SOUTH;
 		}
 	}
-
     return heading;
 }
 
@@ -723,12 +693,639 @@ int senseParticle(intersection map[], int x, int y, int dir, int heading){
     // in the function description.
     //
     ////////////////////////////////////////////////////////////////////////////
-
-/*
-
-given particle direction, and (x, y, heading) return a color
-*/
-    return -1; // you may need to remove this
+	int color = 0;
+	if(x == 0 && y == 0){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[0].NE;
+			}else if(dir == NORTHWEST){
+				color = map[0].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[0].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[0].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[0].SE;
+			}else if(dir == NORTHWEST){
+				color = map[0].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[0].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[0].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[0].SW;
+			}else if(dir == NORTHWEST){
+				color = map[0].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[0].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[0].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[0].NW;
+			}else if(dir == NORTHWEST){
+				color = map[0].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[0].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[0].SE;
+			}
+		}
+	}else if(x == 1 && y == 0){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[1].NE;
+			}else if(dir == NORTHWEST){
+				color = map[1].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[1].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[1].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[1].SE;
+			}else if(dir == NORTHWEST){
+				color = map[1].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[1].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[1].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[1].SW;
+			}else if(dir == NORTHWEST){
+				color = map[1].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[1].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[1].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[1].NW;
+			}else if(dir == NORTHWEST){
+				color = map[1].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[1].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[1].SE;
+			}
+		}
+	}else if(x == 2 && y == 0){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[2].NE;
+			}else if(dir == NORTHWEST){
+				color = map[2].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[2].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[2].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[2].SE;
+			}else if(dir == NORTHWEST){
+				color = map[2].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[2].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[2].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[2].SW;
+			}else if(dir == NORTHWEST){
+				color = map[2].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[2].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[2].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[2].NW;
+			}else if(dir == NORTHWEST){
+				color = map[2].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[2].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[2].SE;
+			}
+		}
+	}else if(x == 0 && y == 1){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[3].NE;
+			}else if(dir == NORTHWEST){
+				color = map[3].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[3].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[3].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[3].SE;
+			}else if(dir == NORTHWEST){
+				color = map[3].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[3].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[3].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[3].SW;
+			}else if(dir == NORTHWEST){
+				color = map[3].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[3].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[3].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[3].NW;
+			}else if(dir == NORTHWEST){
+				color = map[3].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[3].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[3].SE;
+			}
+		}
+	}else if(x == 1 && y == 1){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[4].NE;
+			}else if(dir == NORTHWEST){
+				color = map[4].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[4].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[4].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[4].SE;
+			}else if(dir == NORTHWEST){
+				color = map[4].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[4].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[4].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[4].SW;
+			}else if(dir == NORTHWEST){
+				color = map[4].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[4].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[4].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[4].NW;
+			}else if(dir == NORTHWEST){
+				color = map[4].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[4].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[4].SE;
+			}
+		}
+	}else if(x == 2 && y == 1){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[5].NE;
+			}else if(dir == NORTHWEST){
+				color = map[5].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[5].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[5].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[5].SE;
+			}else if(dir == NORTHWEST){
+				color = map[5].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[5].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[5].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[5].SW;
+			}else if(dir == NORTHWEST){
+				color = map[5].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[5].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[5].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[5].NW;
+			}else if(dir == NORTHWEST){
+				color = map[5].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[5].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[5].SE;
+			}
+		}
+	}else if(x == 0 && y == 2){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[6].NE;
+			}else if(dir == NORTHWEST){
+				color = map[6].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[6].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[6].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[6].SE;
+			}else if(dir == NORTHWEST){
+				color = map[6].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[6].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[6].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[6].SW;
+			}else if(dir == NORTHWEST){
+				color = map[6].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[6].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[6].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[6].NW;
+			}else if(dir == NORTHWEST){
+				color = map[6].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[6].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[6].SE;
+			}
+		}
+	}else if(x == 1 && y == 2){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[7].NE;
+			}else if(dir == NORTHWEST){
+				color = map[7].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[7].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[7].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[7].SE;
+			}else if(dir == NORTHWEST){
+				color = map[7].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[7].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[7].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[7].SW;
+			}else if(dir == NORTHWEST){
+				color = map[7].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[7].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[7].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[7].NW;
+			}else if(dir == NORTHWEST){
+				color = map[7].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[7].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[7].SE;
+			}
+		}
+	}else if(x == 2 && y == 2){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[8].NE;
+			}else if(dir == NORTHWEST){
+				color = map[8].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[8].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[8].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[8].SE;
+			}else if(dir == NORTHWEST){
+				color = map[8].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[8].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[8].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[8].SW;
+			}else if(dir == NORTHWEST){
+				color = map[8].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[8].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[8].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[8].NW;
+			}else if(dir == NORTHWEST){
+				color = map[8].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[8].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[8].SE;
+			}
+		}
+	}else if(x == 0 && y == 3){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[9].NE;
+			}else if(dir == NORTHWEST){
+				color = map[9].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[9].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[9].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[9].SE;
+			}else if(dir == NORTHWEST){
+				color = map[9].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[9].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[9].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[9].SW;
+			}else if(dir == NORTHWEST){
+				color = map[9].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[9].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[9].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[9].NW;
+			}else if(dir == NORTHWEST){
+				color = map[9].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[9].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[9].SE;
+			}
+		}
+	}else if(x == 1 && y == 3){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[10].NE;
+			}else if(dir == NORTHWEST){
+				color = map[10].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[10].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[10].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[10].SE;
+			}else if(dir == NORTHWEST){
+				color = map[10].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[10].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[10].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[10].SW;
+			}else if(dir == NORTHWEST){
+				color = map[10].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[10].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[10].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[10].NW;
+			}else if(dir == NORTHWEST){
+				color = map[10].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[10].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[10].SE;
+			}
+		}
+	}else if(x == 2 && y == 3){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[11].NE;
+			}else if(dir == NORTHWEST){
+				color = map[11].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[11].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[11].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[11].SE;
+			}else if(dir == NORTHWEST){
+				color = map[11].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[11].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[11].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[11].SW;
+			}else if(dir == NORTHWEST){
+				color = map[11].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[11].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[11].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[11].NW;
+			}else if(dir == NORTHWEST){
+				color = map[11].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[11].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[11].SE;
+			}
+		}
+	}else if(x == 0 && y == 4){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[12].NE;
+			}else if(dir == NORTHWEST){
+				color = map[12].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[12].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[12].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[12].SE;
+			}else if(dir == NORTHWEST){
+				color = map[12].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[12].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[12].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[12].SW;
+			}else if(dir == NORTHWEST){
+				color = map[12].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[12].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[12].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[12].NW;
+			}else if(dir == NORTHWEST){
+				color = map[12].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[12].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[12].SE;
+			}
+		}
+	}else if(x == 1 && y == 4){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[13].NE;
+			}else if(dir == NORTHWEST){
+				color = map[13].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[13].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[13].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[13].SE;
+			}else if(dir == NORTHWEST){
+				color = map[13].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[13].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[13].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[13].SW;
+			}else if(dir == NORTHWEST){
+				color = map[13].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[13].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[13].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[13].NW;
+			}else if(dir == NORTHWEST){
+				color = map[13].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[13].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[13].SE;
+			}
+		}
+	}else if(x == 2 && y == 4){
+		if (heading == NORTH){
+			if(dir == NORTHEAST){
+				color = map[14].NE;
+			}else if(dir == NORTHWEST){
+				color = map[14].NW;
+			}else if(dir == SOUTHEAST){
+				color = map[14].SE;
+			}else if(dir == SOUTHWEST){
+				color = map[14].SW;
+			}
+		}else if (heading == EAST){
+			if(dir == NORTHEAST){
+				color = map[14].SE;
+			}else if(dir == NORTHWEST){
+				color = map[14].NE;
+			}else if(dir == SOUTHEAST){
+				color = map[14].SW;
+			}else if(dir == SOUTHWEST){
+				color = map[14].NW;
+			}
+		}else if (heading == SOUTH){
+			if(dir == NORTHEAST){
+				color = map[14].SW;
+			}else if(dir == NORTHWEST){
+				color = map[14].SE;
+			}else if(dir == SOUTHEAST){
+				color = map[14].NW;
+			}else if(dir == SOUTHWEST){
+				color = map[14].NE;
+			}
+		}else if (heading == WEST){
+			if(dir == NORTHEAST){
+				color = map[14].NW;
+			}else if(dir == NORTHWEST){
+				color = map[14].SW;
+			}else if(dir == SOUTHEAST){
+				color = map[14].NE;
+			}else if(dir == SOUTHWEST){
+				color = map[14].SE;
+			}
+		}
+	}
+    return color; // you may need to remove this
 }
 
 /* The main task which initializes data
@@ -902,12 +1499,12 @@ task main() {
     //    - move the robot and the particles forward to the next intersection
     //
     /////////////////////////////////////////////////////////////////////////////
-/*    move_robot(csr);
+    move_robot(csr);
     ClearScreen();
-    scan_surroundings(csr);*/
-
-    change_direction(1, csr);
+    scan_surroundings(csr);
     move_to(0, 2, NORTH, csr);
+    scan_surroundings(csr);
+    move_to(1, 2, EAST, csr);
 //   while (robp < THRESHOLD){ /* run the update loop until an acceptable
 //                               probability is obtained */
 //      /* implement me */
@@ -928,3 +1525,4 @@ task main() {
 //   move_to(target, dest,guess[2]);
 //   PlayToneEx(Random(1000) + 200, ROTATIONA0, 3, FALSE);
 }
+

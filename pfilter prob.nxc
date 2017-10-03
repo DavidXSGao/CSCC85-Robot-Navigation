@@ -355,8 +355,7 @@ sub change_direction(int c, ColorSensorReadType &csr){
 // selects the appropriate turn based on the headings given
 
     switch (c){
-           case 3:
-                //turn right 45 degrees
+           case 3: //turn right 45 degrees
                 while (curr_color == dest_color){        // color changes
                    OnFwd(OUT_A, ROTATIONA);
                    OnRev(OUT_C, SPEED);
@@ -370,8 +369,7 @@ sub change_direction(int c, ColorSensorReadType &csr){
                    }
                 }
                 break;
-           case -1:
-                //turn left 90 degrees
+           case -1: //turn right 90 degrees
 
                 // color changes twice
                 while (curr_color == dest_color){        // color changes
@@ -405,8 +403,7 @@ sub change_direction(int c, ColorSensorReadType &csr){
                    }
                 }
                 break;
-           case -3:
-                //turn left 45 degrees
+           case -3: //turn left 45 degrees
                 while (curr_color == dest_color){        // color changes
                    OnRev(OUT_A, ROTATIONA);
                    OnFwd(OUT_C, SPEED);
@@ -420,8 +417,7 @@ sub change_direction(int c, ColorSensorReadType &csr){
                    }
                 }
                 break;
-           case 1:
-                //turn right 90 degrees
+           case 1: //turn left 90 degrees
 
                 // color changes twice
                 while (curr_color == dest_color){        // color changes
@@ -458,7 +454,7 @@ sub change_direction(int c, ColorSensorReadType &csr){
            case 2:
 		   case -2:
                 // 180 degree turn
-
+                /*
                 until (get_color(csr) != dest_color){       // color changes
                    OnRev(OUT_A, ROTATIONA);
                    OnFwd(OUT_C, SPEED);
@@ -476,7 +472,7 @@ sub change_direction(int c, ColorSensorReadType &csr){
 				until (get_color(csr) != second_color){       // color changes four times
                    OnRev(OUT_A, ROTATIONA);
                    OnFwd(OUT_C, SPEED);
-                }
+                }*/
                 break;
     }
 }
@@ -494,8 +490,8 @@ sub change_direction(int c, ColorSensorReadType &csr){
 
    This function is used after the robot knows it's own position.
 */
-/*
-int move_to(int s, int f, int h){
+
+int move_to(int s, int f, int h, ColorSensorReadType &csr){
     int sx, sy, fx, fy, tx, ty;
     int heading;
     // extract coordinates from given information
@@ -504,8 +500,7 @@ int move_to(int s, int f, int h){
     fx = f/GHEIGHT;
     fy = f%GHEIGHT;
 
-    */
-/* calculate how far to go in manhatten distances *//*
+/* calculate how far to go in manhatten distances */
 
     tx = fx - sx;
     ty = fy - sy;
@@ -519,57 +514,76 @@ int move_to(int s, int f, int h){
     // makes turns.
     //
     ////////////////////////////////////////////////////////////////////////////
+    
+    /*
+        move to changes direction once, calls move robot, call move to again
+    */
 
     // 4 if statments depending on heading
 	if (heading == NORTH){
-		if(ty > 0){
-			while(ty > 0){
-			   move_robot();
-			   ty--;
-			}
-		}else{
-//			change_direction(int orig, int new); // 180 degrees
-			while(ty < 0){
-			   move_robot();
-			   ty++;
-			}
-		}
-		if (tx > 0){
-//			change_direction(int orig, int new); // 90 degrees right
-			while(tx > 0){
-			   move_robot();
-			   tx--;
-			}
-		}else{
-//			change_direction(int orig, int new); // 90 degrees left
-			while(tx < 0){
-			   move_robot();
-			   tx++;
-			}
-		}
+	    if (tx > 0){
+   			change_direction(-1,csr); // 90 degrees right
+    			while(tx > 0){
+    			   move_robot(csr);
+    			   tx--;
+    			}
+    			if(ty > 0){
+    			   change_direction(1,csr); // 90 degrees left
+                while(ty > 0){
+                   move_robot(csr);
+                   ty--;
+                }
+            }else{
+    			   change_direction(-1,csr); // 90 degrees right
+                while(ty < 0){
+                   move_robot(csr);
+                   ty++;
+                }
+            }
+    		}else{
+   			change_direction(1,csr); // 90 degrees left
+    			while(tx < 0){
+    			   move_robot(csr);
+    			   tx++;
+    			}
+    			if(ty > 0){
+    			   change_direction(-1,csr); // 90 degrees right
+                while(ty > 0){
+                   move_robot(csr);
+                   ty--;
+                }
+            }else{
+       			change_direction(1,csr); // 90 degrees right
+
+                while(ty < 0){
+                   move_robot(csr);
+                   ty++;
+                }
+            }
+    		}
 	}else if (heading == EAST){
 		if (tx > 0){
 			while(tx > 0){
-			   move_robot();
+			   move_robot(csr);
 			   tx--;
 			}
 		}else{
 //			change_direction(int orig, int new); // 180 degrees
 			while(tx < 0){
-			   move_robot();
+			   move_robot(csr);
 			   tx++;
 			}
 		}
 		if(ty > 0){
 //			change_direction(int orig, int new); // 90 degrees left
 			while(ty > 0){
-			   move_robot();
+			   move_robot(csr);
 			   ty--;
 			}
 		}else{
 //			change_direction(int orig, int new); // 90 degrees right
 			while(ty < 0){
-			   move_robot();
+			   move_robot(csr);
 			   ty++;
 			}
 		}
@@ -577,25 +591,25 @@ int move_to(int s, int f, int h){
 		if(ty > 0){
 //			change_direction(int orig, int new); // 180 degrees
 			while(ty > 0){
-			   move_robot();
+			   move_robot(csr);
 			   ty--;
 			}
 		}else{
 			while(ty < 0){
-			   move_robot();
+			   move_robot(csr);
 			   ty++;
 			}
 		}
 		if (tx > 0){
 //			change_direction(int orig, int new); // 90 degrees left
 			while(tx > 0){
-			   move_robot();
+			   move_robot(csr);
 			   tx--;
 			}
 		}else{
 //			change_direction(int orig, int new); // 90 degrees right
 			while(tx < 0){
-			   move_robot();
+			   move_robot(csr);
 			   tx++;
 			}
 		}
@@ -603,25 +617,25 @@ int move_to(int s, int f, int h){
 //		change_direction(int orig, int new); // 180 degrees
 		if (tx > 0){
 			while(tx > 0){
-			   move_robot();
+			   move_robot(csr);
 			   tx--;
 			}
 		}else{
 			while(tx < 0){
-			   move_robot();
+			   move_robot(csr);
 			   tx++;
 			}
 		}
 		if(ty > 0){
 //			change_direction(int orig, int new); // 90 degrees right
 			while(ty > 0){
-			   move_robot();
+			   move_robot(csr);
 			   ty--;
 			}
 		}else{
 //			change_direction(int orig, int new); // 90 degrees left
 			while(ty < 0){
-			   move_robot();
+			   move_robot(csr);
 			   ty++;
 			}
 		}
@@ -629,7 +643,6 @@ int move_to(int s, int f, int h){
 
     return heading;
 }
-*/
 
 /* This function takes a particle and returns an updated particle after moving
 
@@ -655,65 +668,68 @@ particle move(particle p) {
         if(p.y != 4) {
             p.y = p.y + 1;
         } else {
-            // prob almost 0
+            // prob doubles
         }
     } else if(p.theta == EAST) {
         if(p.x != 2) {
             p.x = p.x + 1;
         } else {
-            // prob almost 0
+            // prob doubles
         }
     } else if(p.theta == SOUTH) {
         if(p.y != 0) {
             p.y = p.y - 1;
         } else {
-            // prob almost 0
+            // prob doubles
         }
     } else if(p.theta == WEST) {
         if(p.x != 0) {
             p.x = p.x + 1;
         } else {
-            // prob almost 0
+            // prob doubles
         }
     }
 
     return p;
 }
 
-/* This function returns data on interesection surroundings for particles.
+/* This function returns data on intersection surroundings for particles.
 
    Based on the map data array, we want the colour of the square at the given x
    and y coordinates in direction dir which is one of NE, SE, SW, NW.
 
-   Take note that the heading given will change the percieved directions.
+   Take note that the heading given will change the perceived directions.
    For example, facing north, NE in terms of compass directions is northeast.
    Facing south however, NE in terms of compass directions is southwest.
 
    Because the robot does not know it's own heading, the particles must reflect
    this by using sensing relative to heading.
 */
-//int senseParticle(intersection map[], int x, int y, int dir, int heading){
-//
-//    ////////////////////////////////////////////////////////////////////////////
-//    // TO DO:
-//    //
-//    // Implement the function which checks the surroundings of the particle at
-//    // (x, y) facing the direction given by heading.
-//    //
-//    // The data you need to determine the particle's surroundings is given by
-//    // the map data array.
-//    //
-//    // The integer returned is the
-//    // colour of the square in the direction of dir which is one of NE, SE, SW,
-//    // or NW.
-//    // Keep in mind that the direction is relative to the heading as mentioned
-//    // in the function description.
-//    //
-//    ////////////////////////////////////////////////////////////////////////////
-//
-//
-//    return -1; // you may need to remove this
-//}
+int senseParticle(intersection map[], int x, int y, int dir, int heading){
+
+    ////////////////////////////////////////////////////////////////////////////
+    // TO DO:
+    //
+    // Implement the function which checks the surroundings of the particle at
+    // (x, y) facing the direction given by heading.
+    //
+    // The data you need to determine the particle's surroundings is given by
+    // the map data array.
+    //
+    // The integer returned is the
+    // colour of the square in the direction of dir which is one of NE, SE, SW,
+    // or NW.
+    // Keep in mind that the direction is relative to the heading as mentioned
+    // in the function description.
+    //
+    ////////////////////////////////////////////////////////////////////////////
+
+/*
+
+given particle direction, and (x, y, heading) return a color
+*/
+    return -1; // you may need to remove this
+}
 
 /* The main task which initializes data
    and executes the update loop for the particle filters
@@ -815,7 +831,7 @@ task main() {
     charat = StrIndex(line,2);
     target = target + ASCII_TO_INT(charat); // add y coordinate
 
-    /* read information about the destination which sould be following the target data */
+    /* read information about the destination which should be following the target data */
     fgets(line, READSIZE, fd);
     charat = StrIndex(line,0);
     dest = ASCII_TO_INT(charat);
@@ -857,7 +873,7 @@ task main() {
        have.
 
        === Updating weights ===
-       Each iteration we reasign the particle weights.
+       Each iteration we reassign the particle weights.
        We move the robot, and also the particles.
        The surroundings, being the four coloured squares around the intersection
        are checked. The robot's and particles surroundings are compared and the
@@ -886,12 +902,12 @@ task main() {
     //    - move the robot and the particles forward to the next intersection
     //
     /////////////////////////////////////////////////////////////////////////////
-    move_robot(csr);
+/*    move_robot(csr);
     ClearScreen();
-    scan_surroundings(csr);
+    scan_surroundings(csr);*/
 
     change_direction(1, csr);
-//    Wait(10000);
+    move_to(0, 2, NORTH, csr);
 //   while (robp < THRESHOLD){ /* run the update loop until an acceptable
 //                               probability is obtained */
 //      /* implement me */

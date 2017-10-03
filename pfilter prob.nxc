@@ -49,7 +49,7 @@
 
    decide these values for yourself
    */
-#define THRESHOLD 85
+#define THRESHOLD 0.7
 #define MATCH
 #define MISMATCH
 
@@ -1500,18 +1500,98 @@ task main() {
     //    - move the robot and the particles forward to the next intersection
     //
     /////////////////////////////////////////////////////////////////////////////
-    /*move_robot(csr);
-    ClearScreen();
-    scan_surroundings(csr);
-    move_to(0, 2, NORTH, csr);
-    scan_surroundings(csr);
-    move_to(1, 2, EAST, csr);
-	*/
+
 	while (robp < THRESHOLD){ /* run the update loop until an acceptable
 								probability is obtained */
 		/* implement me */
+		intersection robot_scan = scan_surroundings(csr);
+		for (i = 0; i < GWIDTH*GHEIGHT*4; i++) {
+			int p_NE_N_Color = senseParticle(map, list[i].x, list[i].y, NORTHEAST, NORTH);
+			if (robot_scan.NE == p_NE_N_Color){
+				int p_NW_N_Color = senseParticle(map, list[i].x, list[i].y, NORTHWEST, NORTH);
+				list[i].prob = list[i].prob + 0.10;
+				if (robot_scan.NW == p_NW_N_Color){
+					int p_SE_N_Color = senseParticle(map, list[i].x, list[i].y, SOUTHEAST, NORTH);
+					list[i].prob = list[i].prob + 0.10;
+					if (robot_scan.SE == p_SE_N_Color){
+						int p_SW_N_Color = senseParticle(map, list[i].x, list[i].y, SOUTHWEST, NORTH);
+						list[i].prob = list[i].prob + 0.10;
+						if(robot_scan.SW == p_SW_N_Color){
+							list[i].prob = list[i].prob + 0.10;
+						}
+					}
+				}
+			}
+			int p_NE_E_Color = senseParticle(map, list[i].x, list[i].y, NORTHEAST, EAST);
+			if (robot_scan.NE == p_NE_E_Color){
+				int p_NW_E_Color = senseParticle(map, list[i].x, list[i].y, NORTHWEST, EAST);
+				list[i].prob = list[i].prob + 0.10;
+				if (robot_scan.NW == p_NW_E_Color){
+					int p_SE_E_Color = senseParticle(map, list[i].x, list[i].y, SOUTHEAST, EAST);
+					list[i].prob = list[i].prob + 0.10;
+					if (robot_scan.SE == p_SE_E_Color){
+						int p_SW_E_Color = senseParticle(map, list[i].x, list[i].y, SOUTHWEST, EAST);
+						list[i].prob = list[i].prob + 0.10;
+						if(robot_scan.SW == p_SW_E_Color){
+							list[i].prob = list[i].prob + 0.10;
+						}
+					}
+				}
+			}
+			int p_NE_S_Color = senseParticle(map, list[i].x, list[i].y, NORTHEAST, SOUTH);
+			if (robot_scan.NE == p_NE_S_Color){
+				int p_NW_S_Color = senseParticle(map, list[i].x, list[i].y, NORTHWEST, SOUTH);
+				list[i].prob = list[i].prob + 0.10;
+				if (robot_scan.NW == p_NW_S_Color){
+					int p_SE_S_Color = senseParticle(map, list[i].x, list[i].y, SOUTHEAST, SOUTH);
+					list[i].prob = list[i].prob + 0.10;
+					if (robot_scan.SE == p_SE_S_Color){
+						int p_SW_S_Color = senseParticle(map, list[i].x, list[i].y, SOUTHWEST, SOUTH);
+						list[i].prob = list[i].prob + 0.10;
+						if(robot_scan.SW == p_SW_S_Color){
+							list[i].prob = list[i].prob + 0.10;
+						}
+					}
+				}
+			}
+			int p_NE_W_Color = senseParticle(map, list[i].x, list[i].y, NORTHEAST, WEST);
+			if (robot_scan.NE == p_NE_W_Color){
+				int p_NW_W_Color = senseParticle(map, list[i].x, list[i].y, NORTHWEST, WEST);
+				list[i].prob = list[i].prob + 0.10;
+				if (robot_scan.NW == p_NW_W_Color){
+					int p_SE_W_Color = senseParticle(map, list[i].x, list[i].y, SOUTHEAST, WEST);
+					list[i].prob = list[i].prob + 0.10;
+					if (robot_scan.SE == p_SE_W_Color){
+						int p_SW_W_Color = senseParticle(map, list[i].x, list[i].y, SOUTHWEST, WEST);
+						list[i].prob = list[i].prob + 0.10;
+						if(robot_scan.SW == p_SW_W_Color){
+							list[i].prob = list[i].prob + 0.10;
+						}
+					}
+				}
+			}
+		}
+		int sum = 0;
+		for (i = 0; i < GWIDTH*GHEIGHT*4; i++) {
+			sum += list[i].prob;
+		}
+		for (i = 0; i < GWIDTH*GHEIGHT*4; i++) {
+			list[i].prob = (list[i].prob / sum);
+		}
+		particle highest_prob = list[0];
+		for (i = 0; i < GWIDTH*GHEIGHT*4; i++) {
+			if(list[i].prob > highest_prob.prob){
+				highest_prob = list[i];
+			}
+		}
+		guess[0] = highest_prob.x;
+		guess[1] = highest_prob.y;
+		guess[2] = highest_prob.theta;
+		robp = highest_prob.theta;
 		move_robot(csr);
-		scan_surroundings(csr);
+		for (i = 0; i < GWIDTH*GHEIGHT*4; i++) {
+			move(list[i]);
+		}
 	}
 	PlayToneEx(Random(1000) + 200, 400, 3, FALSE);
 

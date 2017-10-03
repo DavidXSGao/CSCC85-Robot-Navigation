@@ -517,10 +517,10 @@ int move_to(int s, int f, int h, ColorSensorReadType &csr){
     int sx, sy, fx, fy, tx, ty;
     int heading;
     // extract coordinates from given information
-    sx = s%GHEIGHT;
-    sy = s/GHEIGHT;
-    fx = f%GHEIGHT;
-    fy = f/GHEIGHT;
+    sx = s/GHEIGHT;
+    sy = s%GHEIGHT;
+    fx = f/GHEIGHT;
+    fy = f%GHEIGHT;
 
 /* calculate how far to go in manhatten distances */
 
@@ -739,253 +739,253 @@ int senseParticle(intersection map[], int x, int y, int dir, int heading){
 	}else if(x == 1 && y == 0){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[1].NE;
+				color = map[5].NE;
 			}else if(dir == NORTHWEST){
-				color = map[1].NW;
+				color = map[5].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[1].SE;
+				color = map[5].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[1].SW;
+				color = map[5].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[1].SE;
+				color = map[5].SE;
 			}else if(dir == NORTHWEST){
-				color = map[1].NE;
+				color = map[5].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[1].SW;
+				color = map[5].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[1].NW;
+				color = map[5].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[1].SW;
+				color = map[5].SW;
 			}else if(dir == NORTHWEST){
-				color = map[1].SE;
+				color = map[5].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[1].NW;
+				color = map[5].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[1].NE;
+				color = map[5].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[1].NW;
+				color = map[5].NW;
 			}else if(dir == NORTHWEST){
-				color = map[1].SW;
+				color = map[5].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[1].NE;
+				color = map[5].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[1].SE;
+				color = map[5].SE;
 			}
 		}
 	}else if(x == 2 && y == 0){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[2].NE;
+				color = map[10].NE;
 			}else if(dir == NORTHWEST){
-				color = map[2].NW;
+				color = map[10].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[2].SE;
+				color = map[10].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[2].SW;
+				color = map[10].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[2].SE;
+				color = map[10].SE;
 			}else if(dir == NORTHWEST){
-				color = map[2].NE;
+				color = map[10].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[2].SW;
+				color = map[10].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[2].NW;
+				color = map[10].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[2].SW;
+				color = map[10].SW;
 			}else if(dir == NORTHWEST){
-				color = map[2].SE;
+				color = map[10].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[2].NW;
+				color = map[10].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[2].NE;
+				color = map[10].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[2].NW;
+				color = map[10].NW;
 			}else if(dir == NORTHWEST){
-				color = map[2].SW;
+				color = map[10].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[2].NE;
+				color = map[10].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[2].SE;
+				color = map[10].SE;
 			}
 		}
 	}else if(x == 0 && y == 1){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[3].NE;
+				color = map[1].NE;
 			}else if(dir == NORTHWEST){
-				color = map[3].NW;
+				color = map[1].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[3].SE;
+				color = map[1].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[3].SW;
+				color = map[1].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[3].SE;
+				color = map[1].SE;
 			}else if(dir == NORTHWEST){
-				color = map[3].NE;
+				color = map[1].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[3].SW;
+				color = map[1].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[3].NW;
+				color = map[1].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[3].SW;
+				color = map[1].SW;
 			}else if(dir == NORTHWEST){
-				color = map[3].SE;
+				color = map[1].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[3].NW;
+				color = map[1].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[3].NE;
+				color = map[1].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[3].NW;
+				color = map[1].NW;
 			}else if(dir == NORTHWEST){
-				color = map[3].SW;
+				color = map[1].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[3].NE;
+				color = map[1].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[3].SE;
+				color = map[1].SE;
 			}
 		}
 	}else if(x == 1 && y == 1){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[4].NE;
+				color = map[6].NE;
 			}else if(dir == NORTHWEST){
-				color = map[4].NW;
+				color = map[6].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[4].SE;
+				color = map[6].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[4].SW;
+				color = map[6].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[4].SE;
+				color = map[6].SE;
 			}else if(dir == NORTHWEST){
-				color = map[4].NE;
+				color = map[6].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[4].SW;
+				color = map[6].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[4].NW;
+				color = map[6].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[4].SW;
+				color = map[6].SW;
 			}else if(dir == NORTHWEST){
-				color = map[4].SE;
+				color = map[6].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[4].NW;
+				color = map[6].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[4].NE;
+				color = map[6].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[4].NW;
+				color = map[6].NW;
 			}else if(dir == NORTHWEST){
-				color = map[4].SW;
+				color = map[6].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[4].NE;
+				color = map[6].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[4].SE;
+				color = map[6].SE;
 			}
 		}
 	}else if(x == 2 && y == 1){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[5].NE;
+				color = map[11].NE;
 			}else if(dir == NORTHWEST){
-				color = map[5].NW;
+				color = map[11].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[5].SE;
+				color = map[11].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[5].SW;
+				color = map[11].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[5].SE;
+				color = map[11].SE;
 			}else if(dir == NORTHWEST){
-				color = map[5].NE;
+				color = map[11].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[5].SW;
+				color = map[11].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[5].NW;
+				color = map[11].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[5].SW;
+				color = map[11].SW;
 			}else if(dir == NORTHWEST){
-				color = map[5].SE;
+				color = map[11].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[5].NW;
+				color = map[11].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[5].NE;
+				color = map[11].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[5].NW;
+				color = map[11].NW;
 			}else if(dir == NORTHWEST){
-				color = map[5].SW;
+				color = map[11].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[5].NE;
+				color = map[11].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[5].SE;
+				color = map[11].SE;
 			}
 		}
 	}else if(x == 0 && y == 2){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[6].NE;
+				color = map[2].NE;
 			}else if(dir == NORTHWEST){
-				color = map[6].NW;
+				color = map[2].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[6].SE;
+				color = map[2].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[6].SW;
+				color = map[2].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[6].SE;
+				color = map[2].SE;
 			}else if(dir == NORTHWEST){
-				color = map[6].NE;
+				color = map[2].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[6].SW;
+				color = map[2].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[6].NW;
+				color = map[2].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[6].SW;
+				color = map[2].SW;
 			}else if(dir == NORTHWEST){
-				color = map[6].SE;
+				color = map[2].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[6].NW;
+				color = map[2].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[6].NE;
+				color = map[2].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[6].NW;
+				color = map[2].NW;
 			}else if(dir == NORTHWEST){
-				color = map[6].SW;
+				color = map[2].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[6].NE;
+				color = map[2].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[6].SE;
+				color = map[2].SE;
 			}
 		}
 	}else if(x == 1 && y == 2){
@@ -1033,253 +1033,253 @@ int senseParticle(intersection map[], int x, int y, int dir, int heading){
 	}else if(x == 2 && y == 2){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[8].NE;
+				color = map[12].NE;
 			}else if(dir == NORTHWEST){
-				color = map[8].NW;
+				color = map[12].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[8].SE;
+				color = map[12].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[8].SW;
+				color = map[12].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[8].SE;
+				color = map[12].SE;
 			}else if(dir == NORTHWEST){
-				color = map[8].NE;
+				color = map[12].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[8].SW;
+				color = map[12].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[8].NW;
+				color = map[12].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[8].SW;
+				color = map[12].SW;
 			}else if(dir == NORTHWEST){
-				color = map[8].SE;
+				color = map[12].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[8].NW;
+				color = map[12].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[8].NE;
+				color = map[12].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[8].NW;
+				color = map[12].NW;
 			}else if(dir == NORTHWEST){
-				color = map[8].SW;
+				color = map[12].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[8].NE;
+				color = map[12].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[8].SE;
+				color = map[12].SE;
 			}
 		}
 	}else if(x == 0 && y == 3){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[9].NE;
+				color = map[3].NE;
 			}else if(dir == NORTHWEST){
-				color = map[9].NW;
+				color = map[3].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[9].SE;
+				color = map[3].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[9].SW;
+				color = map[3].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[9].SE;
+				color = map[3].SE;
 			}else if(dir == NORTHWEST){
-				color = map[9].NE;
+				color = map[3].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[9].SW;
+				color = map[3].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[9].NW;
+				color = map[3].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[9].SW;
+				color = map[3].SW;
 			}else if(dir == NORTHWEST){
-				color = map[9].SE;
+				color = map[3].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[9].NW;
+				color = map[3].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[9].NE;
+				color = map[3].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[9].NW;
+				color = map[3].NW;
 			}else if(dir == NORTHWEST){
-				color = map[9].SW;
+				color = map[3].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[9].NE;
+				color = map[3].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[9].SE;
+				color = map[3].SE;
 			}
 		}
 	}else if(x == 1 && y == 3){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[10].NE;
+				color = map[8].NE;
 			}else if(dir == NORTHWEST){
-				color = map[10].NW;
+				color = map[8].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[10].SE;
+				color = map[8].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[10].SW;
+				color = map[8].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[10].SE;
+				color = map[8].SE;
 			}else if(dir == NORTHWEST){
-				color = map[10].NE;
+				color = map[8].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[10].SW;
+				color = map[8].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[10].NW;
+				color = map[8].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[10].SW;
+				color = map[8].SW;
 			}else if(dir == NORTHWEST){
-				color = map[10].SE;
+				color = map[8].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[10].NW;
+				color = map[8].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[10].NE;
+				color = map[8].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[10].NW;
+				color = map[8].NW;
 			}else if(dir == NORTHWEST){
-				color = map[10].SW;
+				color = map[8].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[10].NE;
+				color = map[8].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[10].SE;
+				color = map[8].SE;
 			}
 		}
 	}else if(x == 2 && y == 3){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[11].NE;
+				color = map[13].NE;
 			}else if(dir == NORTHWEST){
-				color = map[11].NW;
+				color = map[13].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[11].SE;
+				color = map[13].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[11].SW;
+				color = map[13].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[11].SE;
+				color = map[13].SE;
 			}else if(dir == NORTHWEST){
-				color = map[11].NE;
+				color = map[13].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[11].SW;
+				color = map[13].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[11].NW;
+				color = map[13].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[11].SW;
+				color = map[13].SW;
 			}else if(dir == NORTHWEST){
-				color = map[11].SE;
+				color = map[13].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[11].NW;
+				color = map[13].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[11].NE;
+				color = map[13].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[11].NW;
+				color = map[13].NW;
 			}else if(dir == NORTHWEST){
-				color = map[11].SW;
+				color = map[13].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[11].NE;
+				color = map[13].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[11].SE;
+				color = map[13].SE;
 			}
 		}
 	}else if(x == 0 && y == 4){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[12].NE;
+				color = map[4].NE;
 			}else if(dir == NORTHWEST){
-				color = map[12].NW;
+				color = map[4].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[12].SE;
+				color = map[4].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[12].SW;
+				color = map[4].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[12].SE;
+				color = map[4].SE;
 			}else if(dir == NORTHWEST){
-				color = map[12].NE;
+				color = map[4].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[12].SW;
+				color = map[4].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[12].NW;
+				color = map[4].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[12].SW;
+				color = map[4].SW;
 			}else if(dir == NORTHWEST){
-				color = map[12].SE;
+				color = map[4].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[12].NW;
+				color = map[4].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[12].NE;
+				color = map[4].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[12].NW;
+				color = map[4].NW;
 			}else if(dir == NORTHWEST){
-				color = map[12].SW;
+				color = map[4].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[12].NE;
+				color = map[4].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[12].SE;
+				color = map[4].SE;
 			}
 		}
 	}else if(x == 1 && y == 4){
 		if (heading == NORTH){
 			if(dir == NORTHEAST){
-				color = map[13].NE;
+				color = map[9].NE;
 			}else if(dir == NORTHWEST){
-				color = map[13].NW;
+				color = map[9].NW;
 			}else if(dir == SOUTHEAST){
-				color = map[13].SE;
+				color = map[9].SE;
 			}else if(dir == SOUTHWEST){
-				color = map[13].SW;
+				color = map[9].SW;
 			}
 		}else if (heading == EAST){
 			if(dir == NORTHEAST){
-				color = map[13].SE;
+				color = map[9].SE;
 			}else if(dir == NORTHWEST){
-				color = map[13].NE;
+				color = map[9].NE;
 			}else if(dir == SOUTHEAST){
-				color = map[13].SW;
+				color = map[9].SW;
 			}else if(dir == SOUTHWEST){
-				color = map[13].NW;
+				color = map[9].NW;
 			}
 		}else if (heading == SOUTH){
 			if(dir == NORTHEAST){
-				color = map[13].SW;
+				color = map[9].SW;
 			}else if(dir == NORTHWEST){
-				color = map[13].SE;
+				color = map[9].SE;
 			}else if(dir == SOUTHEAST){
-				color = map[13].NW;
+				color = map[9].NW;
 			}else if(dir == SOUTHWEST){
-				color = map[13].NE;
+				color = map[9].NE;
 			}
 		}else if (heading == WEST){
 			if(dir == NORTHEAST){
-				color = map[13].NW;
+				color = map[9].NW;
 			}else if(dir == NORTHWEST){
-				color = map[13].SW;
+				color = map[9].SW;
 			}else if(dir == SOUTHEAST){
-				color = map[13].NE;
+				color = map[9].NE;
 			}else if(dir == SOUTHWEST){
-				color = map[13].SE;
+				color = map[9].SE;
 			}
 		}
 	}else if(x == 2 && y == 4){

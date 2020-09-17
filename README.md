@@ -1,2 +1,2 @@
 # CSCC85-Robot-Navigation
-Enable robot to determine its location and navigate to its target
+Enable a Lego Mindstorm robot to determine its location and navigate to its target so that it can play soccer
